@@ -37,7 +37,7 @@ const Navbar = () => {
             borderRadius="5px"
             overflow="hidden"
           >
-            <Image src="favicon.png" alt="web-logo" w="100%" h="100%" />
+            <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
           </Box>
           <Text fontWeight={600} fontSize={["18px", "22px", null, "26px"]}>
             Blogify

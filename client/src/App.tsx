@@ -2,10 +2,11 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import { Box } from "@chakra-ui/react";
-import CreatePost from "./components/CreatePost";
-import EditPost from "./components/EditPost";
+import CreateBlog from "./components/CreateBlog";
+import EditPost from "./components/EditBlog";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import Blog from "./components/Blog";
 
 function App() {
   return (
@@ -16,8 +17,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/create" element={<CreatePost />} />
-        <Route path="/editPost/:id" element={<EditPost />} />
+        <Route path="/create" element={<CreateBlog />} />
+        <Route path="/edit/:id" element={<EditPost />} />
+        <Route path="/blog/:id" element={<Blog />} />
         <Route path="/*" element={<Home />} />
       </Routes>
     </>

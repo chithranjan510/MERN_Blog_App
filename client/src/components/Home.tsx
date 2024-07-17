@@ -1,95 +1,89 @@
 import {
   Avatar,
   Box,
-  chakra,
+  Center,
   HStack,
   Image,
   SimpleGrid,
   Text,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
+import useApi from "../hooks/useApi";
+import { Edit } from "@emotion-icons/boxicons-regular/Edit";
+import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
+import { useNavigate } from "react-router-dom";
+import NoDataFound from "./common/NoDataFound";
+import CustomSpinner from "./common/CustomSpinner";
+import { getBlogDate } from "../utils/getDate";
+import { deletePost } from "../utils/deletePost";
+import DeleteAlertModal from "./common/DeleteAlertModal";
 
-interface GetPostInterface {
-  id: string;
-  title: string;
-  description: string;
+export interface GetPostInterface {
+  _id: string;
   username: string;
   userId: string;
-  createdAt: string;
-  img: string;
+  title: string;
+  description: string;
+  coverImagePath: string;
   content: string;
+  createdAt: string;
 }
 
-const samplePosts: GetPostInterface[] = [
-  {
-    id: "1",
-    title: "Understanding TypeScript",
-    description:
-      "Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript",
-    username: "john_doe",
-    userId: "u1",
-    createdAt: "2024-07-16T10:00:00Z",
-    img: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-    content:
-      "This is a comprehensive guide to understanding TypeScript and its features...",
-  },
-  {
-    id: "2",
-    title: "React Hooks in Depth",
-    description:
-      "Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript",
-    username: "jane_smith",
-    userId: "u2",
-    createdAt: "2024-07-15T14:30:00Z",
-    img: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-    content:
-      "React hooks have revolutionized the way we write React components...",
-  },
-  {
-    id: "3",
-    title: "Getting Started with Node.js and its properties",
-    description:
-      "Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript",
-    username: "developer_joe",
-    userId: "u3",
-    createdAt: "2024-07-14T09:20:00Z",
-    img: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-    content:
-      "Node.js is a powerful tool for building server-side applications...",
-  },
-  {
-    id: "4",
-    title: "CSS Grid Layout",
-    description:
-      "Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript",
-    username: "css_master_css_master",
-    userId: "u4",
-    createdAt: "2024-07-13T12:45:00Z",
-    img: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-    content:
-      "CSS Grid Layout is a two-dimensional layout system for the web...",
-  },
-  {
-    id: "5",
-    title: "Introduction to GraphQL",
-    description:
-      "Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript Understanding TypeScript",
-    username: "graphql_guru",
-    userId: "u5",
-    createdAt: "2024-07-12T11:00:00Z",
-    img: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-    content:
-      "GraphQL is a query language for APIs and a runtime for fulfilling those queries...",
-  },
-];
-
 const Home = () => {
-  const { username, email, isLoggedIn } = useContext(LoginContext);
+  const { username, email, isLoggedIn, userId } = useContext(LoginContext);
+  const [blogs, setBlogs] = useState<GetPostInterface[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [reload, setReload] = useState<boolean>(false);
+  const { api } = useApi();
+  const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [activeBlog, setActiveBlog] = useState<GetPostInterface | null>(null);
+
+  useEffect(() => {
+    api("/blog", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setBlogs(data);
+        setLoading(false);
+        setReload(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+        setReload(false);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reload]);
+
+  if (loading) {
+    return <CustomSpinner />;
+  }
+
+  if (blogs.length === 0) {
+    return <NoDataFound />;
+  }
 
   return (
     <Box px={[5, 10, null, 20]} py={[5, 8, 14]}>
+      <DeleteAlertModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onClick={() => {
+          if (activeBlog)
+            deletePost(activeBlog, () => {
+              onClose();
+              setReload(true);
+              setLoading(true);
+            });
+        }}
+        description="Are you sure, you want to delete this post?"
+      />
       {isLoggedIn && (
         <HStack pb={[8, 12, null, 16]}>
           <Avatar name={username || "guest"} size={["sm", "md"]} />
@@ -110,19 +104,74 @@ const Home = () => {
         ]}
         gap={8}
       >
-        {samplePosts.map((post, index) => {
+        {blogs.map((post, index) => {
           return (
             <VStack
-              alignItems="stretch"
               key={index}
-              borderRadius="10px"
+              p={2}
+              alignItems="stretch"
+              borderRadius="8px"
               overflow="hidden"
-              boxShadow="0 0 5px #aaa"
+              boxShadow="0px 0px 8px #aaa"
+              position="relative"
+              cursor="pointer"
+              spacing={0}
+              onClick={() => {
+                navigate(`/blog/${post._id}`);
+              }}
             >
-              <Box overflow="hidden" aspectRatio="16/9">
-                <Image src={post.img} alt="post" />
+              {post.userId === userId && (
+                <Center
+                  w="40px"
+                  h="40px"
+                  borderRadius="50%"
+                  position="absolute"
+                  top={3}
+                  right={3}
+                  bgColor="#eee"
+                  opacity={0.5}
+                  _hover={{
+                    opacity: 1,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/edit/${post._id}`);
+                  }}
+                >
+                  <Edit width="20px" />
+                </Center>
+              )}
+              {post.userId === userId && (
+                <Center
+                  w="40px"
+                  h="40px"
+                  borderRadius="50%"
+                  position="absolute"
+                  top={3}
+                  left={3}
+                  bgColor="#eee"
+                  opacity={0.5}
+                  _hover={{
+                    opacity: 1,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveBlog(post);
+                    onOpen();
+                  }}
+                >
+                  <Delete width="23px" />
+                </Center>
+              )}
+              <Box overflow="hidden" maxH="200px" mb={3}>
+                <Image
+                  src={"http://localhost:5000/" + post.coverImagePath}
+                  alt="post"
+                  aspectRatio="16/9"
+                  objectFit="cover"
+                />
               </Box>
-              <Box px={4} flex={1}>
+              <Box flex={1} mb={3}>
                 <Text
                   fontWeight={500}
                   fontSize={["18px", "20px", null, "22px"]}
@@ -135,25 +184,32 @@ const Home = () => {
                   {post.description}
                 </Text>
               </Box>
-              <Text
+              <SimpleGrid
+                w="100%"
+                templateColumns="minmax(0, 1fr) 80px"
                 fontWeight={500}
-                fontSize={["12px", "13px", null, "14px"]}
+                spacing={5}
+                alignItems="center"
                 textAlign="center"
                 px={5}
                 py={2}
-                bgColor="gray.700"
-                color="orange.200"
+                bgColor="#eee"
               >
-                {post.username}
-                <chakra.span>{` -> `}</chakra.span>
-                <chakra.span
-                  fontWeight={500}
-                  fontSize={["11px", "12px", null, "13px"]}
-                  color="#fff"
+                <Text
+                  fontSize={["12px", "13px", null, "14px"]}
+                  textAlign="left"
                 >
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </chakra.span>
-              </Text>
+                  {post.username}
+                </Text>
+                <Text
+                  fontSize={["11px", "12px", null, "13px"]}
+                  textAlign="right"
+                  fontWeight={700}
+                  opacity={0.5}
+                >
+                  {getBlogDate(post.createdAt)}
+                </Text>
+              </SimpleGrid>
             </VStack>
           );
         })}

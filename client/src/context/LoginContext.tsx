@@ -41,7 +41,7 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
       .then((res) => res.json())
       .then((data) => {
         setUsername(data.username);
-        setUserId(data._id);
+        setUserId(data.id);
         setEmail(data.email);
       })
       .catch((err) => {

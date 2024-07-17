@@ -1,4 +1,5 @@
 import jsonWebToken from "jsonwebtoken";
+import multer from "multer";
 
 export const authorizeMiddleware = (req, res, next) => {
   const path = req.path;
@@ -13,14 +14,20 @@ export const authorizeMiddleware = (req, res, next) => {
     });
   }
 
-  if (
-    !token &&
-    (path.includes("create") ||
-      path.includes("edit") ||
-      path.includes("profile"))
-  ) {
+  if (!token && (!path.includes("login") || !path.includes("register"))) {
     return res.status(403).json({ message: "Access denied" });
   }
 
   next();
 };
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+export const upload = multer({ storage: storage });
