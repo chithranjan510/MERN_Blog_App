@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jsonWebToken from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 
 export const login = async (req, res) => {
@@ -16,7 +16,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Password is incorrect" });
     }
 
-    jwt.sign(
+    jsonWebToken.sign(
       { email, id: user._id },
       process.env.JWT_SECRET_KEY,
       {},
@@ -25,7 +25,7 @@ export const login = async (req, res) => {
         res
           .status(200)
           .cookie("token", token)
-          .json({ message: "logged in successfully" });
+          .json({ username: user.username, message: "logged in successfully" });
       }
     );
   } catch (error) {
@@ -59,14 +59,24 @@ export const register = async (req, res) => {
   }
 };
 
-export const verifyUserToken = async (req, res) => {
+export const userProfile = async (req, res) => {
   try {
     const { token } = req.cookies;
-    JsonWebToken.verify(token, process.env.JWT_SECRET_KEY, {}, (err, data) => {
-      if (err) throw err;
-      res.json(data);
-    });
+    const data = jsonWebToken.verify(token, process.env.JWT_SECRET_KEY);
+    const userData = await userModel.findById(data.id);
+
+    if (!userData) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      res
+        .status(200)
+        .json({
+          username: userData.username,
+          email: userData.email,
+          id: userData._id,
+        });
+    }
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong, Please try again" });
+    res.status(500).json(error);
   }
 };

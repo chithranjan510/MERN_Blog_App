@@ -1,11 +1,10 @@
 import { Input, Box, useToast } from "@chakra-ui/react";
-import Layout from "./Layout";
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
-import { LoginContext } from "../context/LoginContext";
 import { LoginAndRegisterFormButton } from "./common/Button";
+import { LoginContext } from "../context/LoginContext";
 
 const loginToastId = "loginToastId";
 
@@ -13,7 +12,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const { setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -61,58 +60,62 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
   return (
-    <Layout>
-      <form
-        onSubmit={loginHandler}
-        style={{
-          padding: "20px",
-          paddingTop: "100px",
-          maxWidth: "500px",
-          margin: "auto",
-        }}
-      >
+    <form
+      onSubmit={loginHandler}
+      style={{
+        padding: "20px",
+        paddingTop: "100px",
+        maxWidth: "500px",
+        margin: "auto",
+      }}
+    >
+      <Input
+        type="email"
+        placeholder="Email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        mt={5}
+      />
+      <Box position="relative">
         <Input
-          type="email"
-          placeholder="email"
+          type={passwordVisible ? "text" : "password"}
+          placeholder="Password"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={password}
+          autoComplete="off"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
           mt={5}
+          pr={10}
         />
-        <Box position="relative">
-          <Input
-            type={passwordVisible ? "text" : "password"}
-            placeholder="password"
-            required
-            value={password}
-            autoComplete="off"
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            mt={5}
-            pr={10}
-          />
-          <Box
-            position="absolute"
-            top="43%"
-            right={3}
-            cursor="pointer"
-            zIndex={1}
-            onClick={() => {
-              setPasswordVisible((prev) => !prev);
-            }}
-          >
-            {passwordVisible ? (
-              <Visibility width="20px" />
-            ) : (
-              <VisibilityOff width="20px" />
-            )}
-          </Box>
+        <Box
+          position="absolute"
+          top="43%"
+          right={3}
+          cursor="pointer"
+          zIndex={1}
+          onClick={() => {
+            setPasswordVisible((prev) => !prev);
+          }}
+        >
+          {passwordVisible ? (
+            <Visibility width="20px" />
+          ) : (
+            <VisibilityOff width="20px" />
+          )}
         </Box>
-        <LoginAndRegisterFormButton label="Login" />
-      </form>
-    </Layout>
+      </Box>
+      <LoginAndRegisterFormButton label="Login" />
+    </form>
   );
 };
 

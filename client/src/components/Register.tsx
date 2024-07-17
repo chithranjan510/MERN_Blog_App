@@ -1,10 +1,10 @@
 import { Input, Text, useToast, Box } from "@chakra-ui/react";
-import Layout from "./Layout";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { LoginAndRegisterFormButton } from "./common/Button";
+import { LoginContext } from "../context/LoginContext";
 
 const registerToastId = "registerToastId";
 
@@ -14,6 +14,7 @@ const Register = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const { isLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
 
   const toast = useToast();
@@ -65,81 +66,85 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
   return (
-    <Layout>
-      <form
-        onSubmit={registerHandler}
-        style={{
-          padding: "20px",
-          paddingTop: "100px",
-          maxWidth: "500px",
-          margin: "auto",
-        }}
-      >
-        <Input
-          type="text"
-          placeholder="username"
-          required
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <Input
-          type="email"
-          placeholder="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          mt={5}
-        />
-        <Box position="relative">
-          <Input
-            type={passwordVisible ? "text" : "password"}
-            placeholder="password"
-            required
-            value={password}
-            autoComplete="off"
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            mt={5}
-            pr={10}
-          />
-          <Box
-            position="absolute"
-            top="43%"
-            right={3}
-            cursor="pointer"
-            zIndex={1}
-            onClick={() => {
-              setPasswordVisible((prev) => !prev);
-            }}
-          >
-            {passwordVisible ? (
-              <Visibility width="20px" />
-            ) : (
-              <VisibilityOff width="20px" />
-            )}
-          </Box>
-        </Box>
+    <form
+      onSubmit={registerHandler}
+      style={{
+        padding: "20px",
+        paddingTop: "100px",
+        maxWidth: "500px",
+        margin: "auto",
+      }}
+    >
+      <Input
+        type="text"
+        placeholder="Username"
+        required
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <Input
+        type="email"
+        placeholder="Email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        mt={5}
+      />
+      <Box position="relative">
         <Input
           type={passwordVisible ? "text" : "password"}
-          placeholder="confirm password"
+          placeholder="Password"
           required
-          value={confirmPassword}
+          value={password}
           autoComplete="off"
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
           mt={5}
+          pr={10}
         />
-        {password !== "" &&
-          confirmPassword !== "" &&
-          password !== confirmPassword && (
-            <Text color="red" fontSize="12px" pl={2}>
-              Password do not match
-            </Text>
+        <Box
+          position="absolute"
+          top="43%"
+          right={3}
+          cursor="pointer"
+          zIndex={1}
+          onClick={() => {
+            setPasswordVisible((prev) => !prev);
+          }}
+        >
+          {passwordVisible ? (
+            <Visibility width="20px" />
+          ) : (
+            <VisibilityOff width="20px" />
           )}
-        <LoginAndRegisterFormButton label="Register"/>
-      </form>
-    </Layout>
+        </Box>
+      </Box>
+      <Input
+        type={passwordVisible ? "text" : "password"}
+        placeholder="Confirm Password"
+        required
+        value={confirmPassword}
+        autoComplete="off"
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        mt={5}
+      />
+      {password !== "" &&
+        confirmPassword !== "" &&
+        password !== confirmPassword && (
+          <Text color="red" fontSize="12px" pl={2}>
+            Password do not match
+          </Text>
+        )}
+      <LoginAndRegisterFormButton label="Register" />
+    </form>
   );
 };
 
