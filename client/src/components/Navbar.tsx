@@ -1,12 +1,23 @@
 import { useContext } from "react";
 import Cookies from "js-cookie";
-import { HStack, Image, Box, Text, Button } from "@chakra-ui/react";
+import {
+  HStack,
+  Image,
+  Box,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  Avatar,
+  MenuItem,
+} from "@chakra-ui/react";
 import { LoginContext } from "../context/LoginContext";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginRegisterAndLogoutNavButton } from "./common/Button";
 
 const Navbar = () => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn, setIsLoggedIn, username, email } =
+    useContext(LoginContext);
   const navigate = useNavigate();
 
   const logoutHandler = () => {
@@ -45,24 +56,40 @@ const Navbar = () => {
         </HStack>
       </Link>
       {isLoggedIn ? (
-        <HStack spacing={[2, 3, null, 5]}>
-          <Link to="/create">
-            <Button
-              size={["xs", "sm", null, "md"]}
-              color="#fff"
-              bgColor="orange.500"
-              _hover={{
-                bgColor: "orange.600",
-              }}
-            >
-              Create new post
-            </Button>
-          </Link>
-          <LoginRegisterAndLogoutNavButton
-            label="Logout"
-            onClick={logoutHandler}
-          />
-        </HStack>
+        <Menu>
+          <MenuButton>
+            <HStack>
+              <Box>
+                <Text
+                  fontWeight={500}
+                  fontSize={["13px", "16px"]}
+                  textAlign="right"
+                >
+                  {username}
+                </Text>
+                <Text fontSize={["12px", "14px"]}>{email}</Text>
+              </Box>
+              <Avatar name={username || "guest"} size={["sm", "md"]} />
+            </HStack>
+          </MenuButton>
+          <MenuList py={1} px={1}>
+            <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
+              <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
+                Profile
+              </Text>
+            </MenuItem>
+            <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
+              <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
+                Authors
+              </Text>
+            </MenuItem>
+            <MenuItem onClick={logoutHandler} borderRadius="3px" py={2}>
+              <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
+                Logout
+              </Text>
+            </MenuItem>
+          </MenuList>
+        </Menu>
       ) : (
         <HStack spacing={[2, 3, null, 5]}>
           <Link to="/login">

@@ -1,25 +1,11 @@
-import {
-  Avatar,
-  Box,
-  Center,
-  HStack,
-  Image,
-  SimpleGrid,
-  Text,
-  useDisclosure,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import useApi from "../hooks/useApi";
-import { Edit } from "@emotion-icons/boxicons-regular/Edit";
-import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NoDataFound from "./common/NoDataFound";
 import CustomSpinner from "./common/CustomSpinner";
 import { getBlogDate } from "../utils/getDate";
-import { deletePost } from "../utils/deletePost";
-import DeleteAlertModal from "./common/DeleteAlertModal";
 
 export interface GetPostInterface {
   _id: string;
@@ -33,14 +19,12 @@ export interface GetPostInterface {
 }
 
 const Home = () => {
-  const { username, email, isLoggedIn, userId } = useContext(LoginContext);
+  const { isLoggedIn } = useContext(LoginContext);
   const [blogs, setBlogs] = useState<GetPostInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [reload, setReload] = useState<boolean>(false);
   const { api } = useApi();
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [activeBlog, setActiveBlog] = useState<GetPostInterface | null>(null);
 
   useEffect(() => {
     api("/blog", {
@@ -71,29 +55,20 @@ const Home = () => {
 
   return (
     <Box px={[5, 10, null, 20]} py={[5, 8, 14]}>
-      <DeleteAlertModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onClick={() => {
-          if (activeBlog)
-            deletePost(activeBlog, () => {
-              onClose();
-              setReload(true);
-              setLoading(true);
-            });
-        }}
-        description="Are you sure, you want to delete this post?"
-      />
       {isLoggedIn && (
-        <HStack pb={[8, 12, null, 16]}>
-          <Avatar name={username || "guest"} size={["sm", "md"]} />
-          <Box>
-            <Text fontWeight={500} fontSize={["14px", "18px"]} lineHeight={1}>
-              {username}
-            </Text>
-            <Text fontSize={["13px", "16px"]}>{email}</Text>
-          </Box>
-        </HStack>
+        <Link to="/create">
+          <Button
+            size={["sm", null, "md"]}
+            color="#fff"
+            bgColor="orange.500"
+            _hover={{
+              bgColor: "orange.600",
+            }}
+            mb={[5, 10]}
+          >
+            Create new post
+          </Button>
+        </Link>
       )}
       <SimpleGrid
         templateColumns={[
@@ -102,7 +77,7 @@ const Home = () => {
           null,
           "repeat(3, minmax(0, 1fr))",
         ]}
-        gap={8}
+        gap={[5, 10]}
       >
         {blogs.map((post, index) => {
           return (
@@ -110,7 +85,7 @@ const Home = () => {
               key={index}
               p={2}
               alignItems="stretch"
-              borderRadius="8px"
+              borderRadius="12px"
               overflow="hidden"
               boxShadow="0px 0px 8px #aaa"
               position="relative"
@@ -119,51 +94,13 @@ const Home = () => {
               onClick={() => {
                 navigate(`/blog/${post._id}`);
               }}
+              bgColor="#fff"
+              _hover={{
+                transform: "scale(1.02)",
+              }}
+              transition="all 0.2s ease"
             >
-              {post.userId === userId && (
-                <Center
-                  w="40px"
-                  h="40px"
-                  borderRadius="50%"
-                  position="absolute"
-                  top={3}
-                  right={3}
-                  bgColor="#eee"
-                  opacity={0.5}
-                  _hover={{
-                    opacity: 1,
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/edit/${post._id}`);
-                  }}
-                >
-                  <Edit width="20px" />
-                </Center>
-              )}
-              {post.userId === userId && (
-                <Center
-                  w="40px"
-                  h="40px"
-                  borderRadius="50%"
-                  position="absolute"
-                  top={3}
-                  left={3}
-                  bgColor="#eee"
-                  opacity={0.5}
-                  _hover={{
-                    opacity: 1,
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveBlog(post);
-                    onOpen();
-                  }}
-                >
-                  <Delete width="23px" />
-                </Center>
-              )}
-              <Box overflow="hidden" maxH="200px" mb={3}>
+              <Box overflow="hidden" maxH="200px" mb={3} borderRadius="10px">
                 <Image
                   src={"http://localhost:5000/" + post.coverImagePath}
                   alt="post"
@@ -177,10 +114,11 @@ const Home = () => {
                   fontSize={["18px", "20px", null, "22px"]}
                   lineHeight={1.2}
                   pb={1}
+                  noOfLines={2}
                 >
                   {post.title}
                 </Text>
-                <Text fontSize={["12px", "13px", null, "14px"]}>
+                <Text fontSize={["12px", "13px", null, "14px"]} noOfLines={5}>
                   {post.description}
                 </Text>
               </Box>
@@ -191,15 +129,14 @@ const Home = () => {
                 spacing={5}
                 alignItems="center"
                 textAlign="center"
-                px={5}
+                px={3}
                 py={2}
-                bgColor="#eee"
               >
                 <Text
                   fontSize={["12px", "13px", null, "14px"]}
                   textAlign="left"
                 >
-                  {post.username}
+                  @{post.username}
                 </Text>
                 <Text
                   fontSize={["11px", "12px", null, "13px"]}

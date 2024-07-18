@@ -10,7 +10,7 @@ import Blog from "./components/Blog";
 
 function App() {
   return (
-    <>
+    <Box bgColor="#dbecf0" minH="100vh">
       <Navbar />
       <Box w="100%" h={["54px", "64px", null, "74px"]} />
       <Routes>
@@ -22,7 +22,7 @@ function App() {
         <Route path="/blog/:id" element={<Blog />} />
         <Route path="/*" element={<Home />} />
       </Routes>
-    </>
+    </Box>
   );
 }
 

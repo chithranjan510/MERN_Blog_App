@@ -5,9 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./routers/user.router.js";
-import { authorizeMiddleware } from "./middlewares.js";
 import blogRouter from "./routers/blog.router.js";
-import imageRouter from "./routers/image.router.js";
 dotenv.config();
 const app = express();
 
@@ -19,7 +17,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(authorizeMiddleware);
 app.use("/uploads", express.static(path.join(import.meta.dirname, "uploads")));
 
 const PORT = process.env.PORT;
@@ -27,8 +24,6 @@ const PORT = process.env.PORT;
 app.use("/api/auth", userRouter);
 
 app.use("/api/blog", blogRouter);
-
-app.use("/api/image", imageRouter)
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

@@ -2,9 +2,11 @@ import jsonWebToken from "jsonwebtoken";
 import multer from "multer";
 
 export const authorizeMiddleware = (req, res, next) => {
-  const path = req.path;
-
   const { token } = req.cookies;
+
+  if (!token) {
+    return res.status(403).json({ message: "Access denied" });
+  }
 
   if (token) {
     jsonWebToken.verify(token, process.env.JWT_SECRET_KEY, {}, (err, data) => {
@@ -12,10 +14,6 @@ export const authorizeMiddleware = (req, res, next) => {
         return res.status(401).json(data);
       }
     });
-  }
-
-  if (!token && (!path.includes("login") || !path.includes("register"))) {
-    return res.status(403).json({ message: "Access denied" });
   }
 
   next();
