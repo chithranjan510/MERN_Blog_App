@@ -7,6 +7,8 @@ import EditPost from "./components/EditBlog";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Blog from "./components/Blog";
+import Authors from "./components/Authors";
+import Profile from "./components/Profile";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/create" element={<CreateBlog />} />
         <Route path="/edit/:id" element={<EditPost />} />
         <Route path="/blog/:id" element={<Blog />} />
+        <Route path="/authors" element={<Authors />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/*" element={<Home />} />
       </Routes>
     </Box>

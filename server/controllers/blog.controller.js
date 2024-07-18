@@ -4,11 +4,10 @@ import fs from "fs";
 
 export const createBlog = async (req, res) => {
   try {
-    const { title, description, content, userId, username } = req.body;
+    const { title, description, content, userId } = req.body;
     const coverImagePath = req.file.path;
     const payload = {
       userId,
-      username,
       title,
       description,
       content,
@@ -54,15 +53,11 @@ export const editBlog = async (req, res) => {
       payload.coverImagePath = coverImagePath;
     }
 
-    const data = await BlogModel.findByIdAndUpdate(id, payload, {
+    await BlogModel.findByIdAndUpdate(id, payload, {
       new: true,
       runValidators: true,
     });
-    if (!data) {
-      res
-        .status(400)
-        .json({ message: "Something went wrong, Please try again" });
-    }
+
     res.status(200).json({ message: "Blog updated successfully" });
   } catch (error) {
     return res.status(500).json(error);
@@ -98,7 +93,10 @@ export const deleteBlog = async (req, res) => {
 
 export const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await BlogModel.find().sort({ createdAt: -1 }).limit(50);
+    const blogs = await BlogModel.find()
+      .populate("userId", "username profileImagePath")
+      .sort({ createdAt: -1 })
+      .limit(50);
     res.status(200).json(blogs);
   } catch (error) {
     return res.status(500).json(error);
@@ -108,7 +106,10 @@ export const getAllBlogs = async (req, res) => {
 export const getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await BlogModel.findById(id);
+    const data = await BlogModel.findById(id).populate(
+      "userId",
+      "username profileImagePath"
+    );
     if (!data) {
       return res.status(404).json({ message: "Data not found" });
     }

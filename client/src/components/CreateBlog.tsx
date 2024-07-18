@@ -12,7 +12,7 @@ import { LoginAndRegisterFormButton } from "./common/Button";
 const createBlogToastId = "createBlogToastId";
 
 const CreateBlog = () => {
-  const { isLoggedIn, userId, username } = useContext(LoginContext);
+  const { isLoggedIn, userId } = useContext(LoginContext);
   const navigate = useNavigate();
   const { api } = useApi();
   const [title, setTitle] = useState<string>("");
@@ -52,7 +52,6 @@ const CreateBlog = () => {
     const formData = new FormData();
 
     formData.set("userId", userId || "");
-    formData.set("username", username || "");
     formData.set("title", title);
     formData.set("description", description);
     formData.set("content", content);

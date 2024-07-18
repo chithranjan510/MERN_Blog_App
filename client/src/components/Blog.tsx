@@ -1,10 +1,10 @@
 import {
+  Avatar,
   Box,
   Button,
   HStack,
   Image,
   Text,
-  chakra,
   useDisclosure,
 } from "@chakra-ui/react";
 import { GetPostInterface } from "./Home";
@@ -85,13 +85,25 @@ const Blog = () => {
       >
         {blog.title}
       </Text>
-      <Text textAlign="center" fontWeight={500} w="100%" mt={2}>
-        @{blog.username}{" "}
-        <chakra.span fontWeight={600} opacity={0.7} pl={5}>
-          {getBlogDate(blog.createdAt)}
-        </chakra.span>
-      </Text>
-      {userId === blog.userId && (
+      <HStack w="fit-content" mx="auto" alignItems="center" mt={2}>
+        <Avatar
+          name={blog.userId.username}
+          src={
+            blog.userId.profileImagePath
+              ? `http://localhost:5000/${blog.userId.profileImagePath}`
+              : ""
+          }
+        />
+        <Box>
+          <Text fontWeight={500} w="100%">
+            @{blog.userId.username}{" "}
+          </Text>
+          <Text fontWeight={600} opacity={0.7} w="100%">
+            {getBlogDate(blog.createdAt)}
+          </Text>
+        </Box>
+      </HStack>
+      {userId === blog.userId._id && (
         <HStack w="100%" justifyContent="center" mt={5}>
           <Link to={`/edit/${id}`}>
             <Button

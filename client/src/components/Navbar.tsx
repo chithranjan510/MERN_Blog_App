@@ -16,7 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { LoginRegisterAndLogoutNavButton } from "./common/Button";
 
 const Navbar = () => {
-  const { isLoggedIn, setIsLoggedIn, username, email } =
+  const { isLoggedIn, setIsLoggedIn, username, email, profileImagePath } =
     useContext(LoginContext);
   const navigate = useNavigate();
 
@@ -69,18 +69,22 @@ const Navbar = () => {
                 </Text>
                 <Text fontSize={["12px", "14px"]}>{email}</Text>
               </Box>
-              <Avatar name={username || "guest"} size={["sm", "md"]} />
+              <Avatar
+                name={username || "guest"}
+                src={`http://localhost:5000/${profileImagePath}`}
+                size={["sm", "md"]}
+              />
             </HStack>
           </MenuButton>
           <MenuList py={1} px={1}>
             <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
               <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
-                Profile
+                <Link to="/profile">Profile</Link>
               </Text>
             </MenuItem>
             <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
               <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
-                Authors
+                <Link to="/authors">Authors</Link>
               </Text>
             </MenuItem>
             <MenuItem onClick={logoutHandler} borderRadius="3px" py={2}>

@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import jsonWebToken from "jsonwebtoken";
 import userModel from "../models/user.model.js";
+import path from "path";
+import fs from "fs";
 
 export const login = async (req, res) => {
   try {
@@ -68,14 +70,63 @@ export const userProfile = async (req, res) => {
     if (!userData) {
       res.status(404).json({ message: "User not found" });
     } else {
-      res
-        .status(200)
-        .json({
-          username: userData.username,
-          email: userData.email,
-          id: userData._id,
-        });
+      res.status(200).json({
+        username: userData.username,
+        email: userData.email,
+        id: userData._id,
+        profileImagePath: userData.profileImagePath,
+      });
     }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const uploadProfileImage = async (req, res) => {
+  try {
+    const profileImagePath = req.file.path;
+    const { id } = req.params;
+
+    await userModel.findByIdAndUpdate(
+      id,
+      { profileImagePath: profileImagePath },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    res.status(200).json({ profileImagePath });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const deleteProfileImage = async (req, res) => {
+  try {
+    const { profileImagePath } = req.query;
+    const { id } = req.params;
+
+    const filePath = path.join(import.meta.dirname, "..", profileImagePath);
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        if (err.code === "ENOENT") {
+          res.status(404).json({ message: "Image file not found" });
+        } else {
+          res.status(500).json({ message: "Error deleting file", error: err });
+        }
+      }
+    });
+
+    await userModel.findByIdAndUpdate(
+      id,
+      { $unset: { profileImagePath: null } },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ message: "Profile image deleted successfully" });
   } catch (error) {
     res.status(500).json(error);
   }

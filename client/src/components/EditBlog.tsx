@@ -123,7 +123,7 @@ const EditBlog = () => {
         setContent(data.content);
         setDescription(data.description);
         setTitle(data.title);
-        setPostUserId(data.userId);
+        setPostUserId(data.userId._id);
         setLoading(false);
         setIsData(true);
       })

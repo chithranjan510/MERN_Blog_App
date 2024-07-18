@@ -1,4 +1,13 @@
-import { Box, Button, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  HStack,
+  Image,
+  SimpleGrid,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import useApi from "../hooks/useApi";
@@ -9,8 +18,7 @@ import { getBlogDate } from "../utils/getDate";
 
 export interface GetPostInterface {
   _id: string;
-  username: string;
-  userId: string;
+  userId: { profileImagePath: string | null; username: string; _id: string };
   title: string;
   description: string;
   coverImagePath: string;
@@ -110,7 +118,7 @@ const Home = () => {
               </Box>
               <Box flex={1} mb={3}>
                 <Text
-                  fontWeight={500}
+                  fontWeight={700}
                   fontSize={["18px", "20px", null, "22px"]}
                   lineHeight={1.2}
                   pb={1}
@@ -128,19 +136,29 @@ const Home = () => {
                 fontWeight={500}
                 spacing={5}
                 alignItems="center"
-                textAlign="center"
                 px={3}
                 py={2}
               >
-                <Text
-                  fontSize={["12px", "13px", null, "14px"]}
-                  textAlign="left"
-                >
-                  @{post.username}
-                </Text>
+                <HStack>
+                  <Avatar
+                    name={post.userId.username}
+                    src={
+                      post.userId.profileImagePath
+                        ? `http://localhost:5000/${post.userId.profileImagePath}`
+                        : ""
+                    }
+                    size="xs"
+                  />
+                  <Box>
+                    <Text
+                      fontSize={["12px", "13px", null, "14px"]}
+                    >
+                      {post.userId.username}
+                    </Text>
+                  </Box>
+                </HStack>
                 <Text
                   fontSize={["11px", "12px", null, "13px"]}
-                  textAlign="right"
                   fontWeight={700}
                   opacity={0.5}
                 >
