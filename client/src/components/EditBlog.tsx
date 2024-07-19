@@ -29,7 +29,9 @@ const EditBlog = () => {
   const { api } = useApi();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [coverImagePath, setCoverImagePath] = useState<string>("");
+  const [image, setImage] = useState<FileList | null>(null);
+  const [imageSrc, setImageSrc] = useState<string>("");
+  const [oldImageSrc, setOldImageSrc] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [isData, setIsData] = useState<boolean>(false);
@@ -39,7 +41,7 @@ const EditBlog = () => {
 
   const handleCreatePost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!coverImagePath) {
+    if (!image && imageSrc === "") {
       if (!toast.isActive(createBlogToastId)) {
         toast({
           id: createBlogToastId,
@@ -70,7 +72,10 @@ const EditBlog = () => {
     formData.set("title", title);
     formData.set("description", description);
     formData.set("content", content);
-    formData.set("coverImagePath", coverImagePath);
+    if (image) {
+      formData.set("blogImage", image[0]);
+    }
+    formData.set("coverImagePath", oldImageSrc);
 
     const res = await api(`/blog/edit/${id}`, {
       method: "PUT",
@@ -113,7 +118,8 @@ const EditBlog = () => {
     api(`/blog/${id}`, { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then((data: GetPostInterface) => {
-        setCoverImagePath(data.coverImagePath);
+        setImageSrc(data.coverImagePath);
+        setOldImageSrc(data.coverImagePath);
         setContent(data.content);
         setDescription(data.description);
         setTitle(data.title);
@@ -179,10 +185,10 @@ const EditBlog = () => {
               cursor="pointer"
               onChange={(e) => setImage(e.target.files)}
             />
-            {coverImagePath ? (
+            {imageSrc ? (
               <Box position="absolute" top={0} left={0} right={0} bottom={0}>
                 <Image
-                  src={`http://localhost:5000/${coverImagePath}`}
+                  src={`http://localhost:5000/${imageSrc}`}
                   alt="blog-post"
                   w="100%"
                   h="100%"
