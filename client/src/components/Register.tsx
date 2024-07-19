@@ -1,9 +1,17 @@
-import { Input, Text, useToast, Box } from "@chakra-ui/react";
+import {
+  Input,
+  Text,
+  useToast,
+  Box,
+  Center,
+  VStack,
+  FormLabel,
+} from "@chakra-ui/react";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
-import { LoginAndRegisterFormButton } from "./common/Button";
+import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
 
 const registerToastId = "registerToastId";
@@ -73,78 +81,111 @@ const Register = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <form
-      onSubmit={registerHandler}
-      style={{
-        padding: "20px",
-        paddingTop: "100px",
-        maxWidth: "500px",
-        margin: "auto",
-      }}
-    >
-      <Input
-        type="text"
-        placeholder="Username"
-        required
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <Input
-        type="email"
-        placeholder="Email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        mt={5}
-      />
-      <Box position="relative">
-        <Input
-          type={passwordVisible ? "text" : "password"}
-          placeholder="Password"
-          required
-          value={password}
-          autoComplete="off"
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-          mt={5}
-          pr={10}
-        />
-        <Box
-          position="absolute"
-          top="43%"
-          right={3}
-          cursor="pointer"
-          zIndex={1}
-          onClick={() => {
-            setPasswordVisible((prev) => !prev);
-          }}
-        >
-          {passwordVisible ? (
-            <Visibility width="20px" />
-          ) : (
-            <VisibilityOff width="20px" />
-          )}
-        </Box>
+    <Box px={[5, 10, null, 20]} py={[10, null, 20]}>
+      <Box
+        p={[5, 10]}
+        maxW="500px"
+        mx="auto"
+        bgColor="#fff"
+        borderRadius="14px"
+      >
+        <form onSubmit={registerHandler}>
+          <VStack w="100%" alignItems="stretch" spacing={8}>
+            <Box position="relative" className="formInputContainer">
+              <Input
+                type="text"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                borderRadius="10px"
+                h="50px"
+                border="2px solid steelBlue"
+                _hover={{}}
+              />
+              <FormLabel position="absolute" bgColor="#fff" px={1}>
+                Username
+              </FormLabel>
+            </Box>
+            <Box position="relative" className="formInputContainer">
+              <Input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                borderRadius="10px"
+                h="50px"
+                border="2px solid steelBlue"
+                _hover={{}}
+              />
+              <FormLabel position="absolute" bgColor="#fff" px={1}>
+                Email
+              </FormLabel>
+            </Box>
+            <Box position="relative" className="formInputContainer">
+              <Input
+                type={passwordVisible ? "text" : "password"}
+                required
+                value={password}
+                autoComplete="off"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                borderRadius="10px"
+                h="50px"
+                pr={14}
+                border="2px solid steelBlue"
+                _hover={{}}
+              />
+              <FormLabel position="absolute" bgColor="#fff" px={1}>
+                Password
+              </FormLabel>
+              <Center
+                position="absolute"
+                w="50px"
+                h="50px"
+                top={0}
+                right={0}
+                cursor="pointer"
+                zIndex={1}
+                onClick={() => {
+                  setPasswordVisible((prev) => !prev);
+                }}
+              >
+                {passwordVisible ? (
+                  <Visibility width="20px" />
+                ) : (
+                  <VisibilityOff width="20px" />
+                )}
+              </Center>
+            </Box>
+            <Box position="relative" className="formInputContainer">
+              <Input
+                type={passwordVisible ? "text" : "password"}
+                required
+                value={confirmPassword}
+                autoComplete="off"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                borderRadius="10px"
+                h="50px"
+                border="2px solid steelBlue"
+                _hover={{}}
+              />
+              <FormLabel position="absolute" bgColor="#fff" px={1}>
+                Confirm Password
+              </FormLabel>
+              {password !== "" &&
+                confirmPassword !== "" &&
+                password !== confirmPassword && (
+                  <Text color="red" fontSize="12px" pl={2}>
+                    Password do not match
+                  </Text>
+                )}
+            </Box>
+            <FormSubmitButton label="Register" />
+          </VStack>
+        </form>
       </Box>
-      <Input
-        type={passwordVisible ? "text" : "password"}
-        placeholder="Confirm Password"
-        required
-        value={confirmPassword}
-        autoComplete="off"
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        mt={5}
-      />
-      {password !== "" &&
-        confirmPassword !== "" &&
-        password !== confirmPassword && (
-          <Text color="red" fontSize="12px" pl={2}>
-            Password do not match
-          </Text>
-        )}
-      <LoginAndRegisterFormButton label="Register" />
-    </form>
+    </Box>
   );
 };
 

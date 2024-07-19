@@ -21,6 +21,7 @@ export const createBlog = async (req, res) => {
     await BlogModel.create(payload);
     res.status(200).json({ message: "Blog created successfully" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 };
@@ -60,6 +61,7 @@ export const editBlog = async (req, res) => {
 
     res.status(200).json({ message: "Blog updated successfully" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 };
@@ -87,6 +89,7 @@ export const deleteBlog = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 };
@@ -99,6 +102,7 @@ export const getAllBlogs = async (req, res) => {
       .limit(50);
     res.status(200).json(blogs);
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 };
@@ -115,6 +119,7 @@ export const getBlogById = async (req, res) => {
     }
     res.status(200).json(data);
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 };

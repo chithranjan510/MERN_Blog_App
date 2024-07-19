@@ -50,7 +50,7 @@ const Authors = () => {
   }
 
   return (
-    <Wrap w="100%" spacing={10} p={[5, 10, null, 20]}>
+    <Wrap w="100%" spacing={[7, 10]} p={[7, 10, null, 20]}>
       {authors.map((author, index) => {
         return (
           <WrapItem
@@ -59,6 +59,7 @@ const Authors = () => {
             borderRadius="8px"
             boxShadow="3px 3px 6px #aaa"
             minW="250px"
+            w={["100%", "fit-content"]}
           >
             <HStack p={4} spacing={2}>
               <Avatar
@@ -68,6 +69,7 @@ const Authors = () => {
                     ? `http://localhost:5000/${author.profileImagePath}`
                     : ""
                 }
+                borderRadius="8px"
               />
               <Box>
                 <Text fontWeight={700}>{author.username}</Text>

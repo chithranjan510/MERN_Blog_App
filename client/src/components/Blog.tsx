@@ -95,10 +95,10 @@ const Blog = () => {
           }
         />
         <Box>
-          <Text fontWeight={500} w="100%">
-            @{blog.userId.username}{" "}
+          <Text fontWeight={500} >
+            {blog.userId.username}
           </Text>
-          <Text fontWeight={600} opacity={0.7} w="100%">
+          <Text fontWeight={600} opacity={0.7}>
             {getBlogDate(blog.createdAt)}
           </Text>
         </Box>

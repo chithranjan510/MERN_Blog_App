@@ -107,6 +107,8 @@ const Home = () => {
                 transform: "scale(1.02)",
               }}
               transition="all 0.2s ease"
+              maxW="350px"
+              mx="auto"
             >
               <Box overflow="hidden" maxH="200px" mb={3} borderRadius="10px">
                 <Image
@@ -150,9 +152,7 @@ const Home = () => {
                     size="xs"
                   />
                   <Box>
-                    <Text
-                      fontSize={["12px", "13px", null, "14px"]}
-                    >
+                    <Text fontSize={["12px", "13px", null, "14px"]}>
                       {post.userId.username}
                     </Text>
                   </Box>

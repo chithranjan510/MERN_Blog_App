@@ -14,7 +14,6 @@ function App() {
   return (
     <Box bgColor="#dbecf0" minH="100vh">
       <Navbar />
-      <Box w="100%" h={["54px", "64px", null, "74px"]} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

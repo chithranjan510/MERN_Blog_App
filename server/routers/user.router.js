@@ -3,6 +3,7 @@ import {
   deleteProfileImage,
   login,
   register,
+  updateUserProfile,
   uploadProfileImage,
   userProfile,
 } from "../controllers/user.controller.js";
@@ -15,6 +16,8 @@ userRouter.post("/login", login);
 userRouter.post("/register", register);
 
 userRouter.get("/profile", authorizeMiddleware, userProfile);
+
+userRouter.put("/updateProfile", authorizeMiddleware, updateUserProfile);
 
 userRouter.post(
   "/profileImage/:id",

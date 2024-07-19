@@ -1,6 +1,6 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
 
-export const LoginAndRegisterFormButton = ({
+export const FormSubmitButton = ({
   label,
   ...props
 }: { label: string } & ButtonProps) => {
@@ -8,12 +8,15 @@ export const LoginAndRegisterFormButton = ({
     <Button
       type="submit"
       w="100%"
-      mt={5}
-      bgColor="gray.300"
+      color="#fff"
+      bgGradient="linear(to-br, yellow.500, orange.600)"
       _hover={{
-        color: "#fff",
-        bgColor: "gray.700",
+        boxShadow: "4px 4px 8px #000",
       }}
+      borderRadius="10px"
+      h="50px"
+      fontSize="18px"
+      letterSpacing={2}
       {...props}
     >
       {label}
@@ -21,16 +24,19 @@ export const LoginAndRegisterFormButton = ({
   );
 };
 
-export const LoginRegisterAndLogoutNavButton = ({
+export const PrimaryButton = ({
   label,
   ...props
 }: { label: string } & ButtonProps) => {
   return (
     <Button
       size={["xs", "sm", null, "md"]}
+      border="1px solid #fff"
+      color="#fff"
+      bgColor="transparent"
       _hover={{
-        color: "#fff",
-        bgColor: "gray.600",
+        bgColor: "#000",
+        color: "orange.200",
       }}
       {...props}
     >

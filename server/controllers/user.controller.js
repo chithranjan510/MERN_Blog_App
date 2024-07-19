@@ -13,13 +13,13 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: "User email does not exist" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Password is incorrect" });
     }
 
     jsonWebToken.sign(
-      { email, id: user._id },
+      { id: user._id },
       process.env.JWT_SECRET_KEY,
       {},
       (err, token) => {
@@ -27,10 +27,11 @@ export const login = async (req, res) => {
         res
           .status(200)
           .cookie("token", token)
-          .json({ username: user.username, message: "logged in successfully" });
+          .json({ message: "logged in successfully" });
       }
     );
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
@@ -57,6 +58,7 @@ export const register = async (req, res) => {
     });
     res.status(200).json({ message: "User registered successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
@@ -78,26 +80,70 @@ export const userProfile = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const newData = req.body;
+    const { token } = req.cookies;
+
+    const { id } = jsonWebToken.verify(token, process.env.JWT_SECRET_KEY);
+
+    const userData = await userModel.findById(id);
+
+    if (!userData) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    const hashedPassword = newData.password
+      ? await bcrypt.hash(newData.password, 10)
+      : null;
+
+    if (hashedPassword) {
+      newData.password = hashedPassword;
+    }
+
+    const { username, email, password } = userData;
+
+    const payload = { username, email, password, ...newData };
+
+    await userModel.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true,
+    });
+
+    jsonWebToken.sign({ id }, process.env.JWT_SECRET_KEY, {}, (err, token) => {
+      if (err) throw err;
+      res.status(200).cookie("token", token).json({
+        message: "Profile updated successfully",
+      });
+    });
+  } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
 
 export const uploadProfileImage = async (req, res) => {
   try {
-    const profileImagePath = req.file.path;
+    const imagePath = req.file.path;
     const { id } = req.params;
 
     await userModel.findByIdAndUpdate(
       id,
-      { profileImagePath: profileImagePath },
+      { profileImagePath: imagePath },
       {
         new: true,
         runValidators: true,
       }
     );
 
-    res.status(200).json({ profileImagePath });
+    res.status(200).json({ imagePath });
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
@@ -128,6 +174,7 @@ export const deleteProfileImage = async (req, res) => {
 
     res.status(200).json({ message: "Profile image deleted successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };

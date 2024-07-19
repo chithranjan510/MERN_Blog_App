@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { LoginContext } from "../context/LoginContext";
 import { Link, useNavigate } from "react-router-dom";
-import { LoginRegisterAndLogoutNavButton } from "./common/Button";
+import { PrimaryButton } from "./common/Button";
 
 const Navbar = () => {
   const { isLoggedIn, setIsLoggedIn, username, email, profileImagePath } =
@@ -34,7 +34,7 @@ const Navbar = () => {
       py={3}
       bgColor="gray.800"
       color="#fff"
-      position="fixed"
+      position="sticky"
       top={0}
       left={0}
       right={0}
@@ -77,16 +77,20 @@ const Navbar = () => {
             </HStack>
           </MenuButton>
           <MenuList py={1} px={1}>
-            <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
-              <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
-                <Link to="/profile">Profile</Link>
-              </Text>
-            </MenuItem>
-            <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
-              <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
-                <Link to="/authors">Authors</Link>
-              </Text>
-            </MenuItem>
+            <Link to="/profile">
+              <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
+                <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
+                  Profile
+                </Text>
+              </MenuItem>
+            </Link>
+            <Link to="/authors">
+              <MenuItem borderRadius="3px" borderBottom="1px solid #ccc" py={2}>
+                <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
+                  Authors
+                </Text>
+              </MenuItem>
+            </Link>
             <MenuItem onClick={logoutHandler} borderRadius="3px" py={2}>
               <Text color="#000" textAlign="center" w="100%" fontWeight={500}>
                 Logout
@@ -97,10 +101,10 @@ const Navbar = () => {
       ) : (
         <HStack spacing={[2, 3, null, 5]}>
           <Link to="/login">
-            <LoginRegisterAndLogoutNavButton label="Login" />
+            <PrimaryButton label="Login" />
           </Link>
           <Link to="/register">
-            <LoginRegisterAndLogoutNavButton label="Register" />
+            <PrimaryButton label="Register" />
           </Link>
         </HStack>
       )}
