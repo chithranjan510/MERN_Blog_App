@@ -13,7 +13,7 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: "User email does not exist" });
     }
 
-    const isPasswordCorrect = bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Password is incorrect" });
     }
@@ -129,19 +129,19 @@ export const updateUserProfile = async (req, res) => {
 
 export const uploadProfileImage = async (req, res) => {
   try {
-    const imagePath = req.file.path;
+    const profileImagePath = req.file.path;
     const { id } = req.params;
 
     await userModel.findByIdAndUpdate(
       id,
-      { profileImagePath: imagePath },
+      { profileImagePath: profileImagePath },
       {
         new: true,
         runValidators: true,
       }
     );
 
-    res.status(200).json({ imagePath });
+    res.status(200).json({ profileImagePath });
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

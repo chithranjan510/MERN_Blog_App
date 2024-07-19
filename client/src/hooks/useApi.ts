@@ -1,12 +1,10 @@
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
-
-const unauthorizeToastId = "unauthorizeToastId";
+import useCustomToast, { CustomToastStatusEnum } from "./useCustomToast";
 
 const useApi = () => {
   const navigate = useNavigate();
-  const toast = useToast();
+  const customToast = useCustomToast();
 
   const api = async (
     route: string,
@@ -17,15 +15,7 @@ const useApi = () => {
     if (res.status === 401) {
       Cookies.remove("token");
       navigate("/login");
-      if (!toast.isActive(unauthorizeToastId)) {
-        toast({
-          id: unauthorizeToastId,
-          status: "error",
-          description: "Unauthorize access",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Unauthorize access", CustomToastStatusEnum.error);
     }
 
     return res;

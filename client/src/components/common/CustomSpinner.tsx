@@ -7,7 +7,7 @@ const spinningKeyframes = keyframes`
 
 const CustomSpinner = () => {
   return (
-    <Center w="100%" h="80vh">
+    <Center w="100%" h="50vh">
       <Box
         w="100px"
         h="100px"

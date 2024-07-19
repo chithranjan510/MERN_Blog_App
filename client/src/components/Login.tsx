@@ -1,19 +1,11 @@
-import {
-  Input,
-  Box,
-  useToast,
-  Center,
-  VStack,
-  FormLabel,
-} from "@chakra-ui/react";
+import { Input, Box, Center, VStack, FormLabel } from "@chakra-ui/react";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
 import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
-
-const loginToastId = "loginToastId";
+import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,7 +13,7 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
-  const toast = useToast();
+  const customToast = useCustomToast();
   const navigate = useNavigate();
 
   const loginHandler = async (e: FormEvent<HTMLFormElement>) => {
@@ -40,15 +32,7 @@ const Login = () => {
     });
 
     if (res.ok) {
-      if (!toast.isActive(loginToastId)) {
-        toast({
-          id: loginToastId,
-          description: "Logged in Successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);
       navigate("/");
       return;
@@ -56,15 +40,10 @@ const Login = () => {
 
     const data: { message?: string } = await res.json();
 
-    if (!toast.isActive(loginToastId)) {
-      toast({
-        id: loginToastId,
-        description: data.message || "Something went wrong, Please try again",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    customToast(
+      data.message || "Something went wrong, Please try again",
+      CustomToastStatusEnum.error
+    );
   };
 
   useEffect(() => {

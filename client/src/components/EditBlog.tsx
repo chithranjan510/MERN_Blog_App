@@ -1,12 +1,4 @@
-import {
-  Box,
-  Center,
-  Image,
-  Input,
-  Text,
-  Textarea,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Center, Image, Input, Text, Textarea } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,8 +12,7 @@ import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
 import { GetPostInterface } from "./Home";
 import CustomSpinner from "./common/CustomSpinner";
 import NoDataFound from "./common/NoDataFound";
-
-const createBlogToastId = "createBlogToastId";
+import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 
 const EditBlog = () => {
   const { isLoggedIn, userId } = useContext(LoginContext);
@@ -36,34 +27,18 @@ const EditBlog = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isData, setIsData] = useState<boolean>(false);
   const [postUserId, setPostUserId] = useState<string | null>(null);
-  const toast = useToast();
+  const customToast = useCustomToast();
   const { id } = useParams();
 
   const handleCreatePost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!image && imageSrc === "") {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "Image cannot be empty",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Image cannot be empty", CustomToastStatusEnum.error);
       return;
     }
 
     if (content === "") {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "Blog content cannot be empty",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Blog content cannot be empty", CustomToastStatusEnum.error);
       return;
     }
 
@@ -84,30 +59,17 @@ const EditBlog = () => {
     });
 
     if (res.ok) {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "Blog updated successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Blog updated successfully", CustomToastStatusEnum.success);
       navigate(`/blog/${id}`);
       return;
     }
 
     const data: { message?: string } = await res.json();
 
-    if (!toast.isActive(createBlogToastId)) {
-      toast({
-        id: createBlogToastId,
-        description: data.message || "Something went wrong, Please try again",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    customToast(
+      data.message || "Something went wrong, Please try again",
+      CustomToastStatusEnum.error
+    );
   };
 
   useEffect(() => {
@@ -140,15 +102,10 @@ const EditBlog = () => {
     }
 
     if (userId !== postUserId) {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "You can only edit your own post",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast(
+        "You can only edit your own post",
+        CustomToastStatusEnum.error
+      );
       navigate(`/blog/${id}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

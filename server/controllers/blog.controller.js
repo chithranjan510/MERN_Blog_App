@@ -1,5 +1,5 @@
 import path from "path";
-import BlogModel from "../models/blog.model.js";
+import BlogModel, { CategoryModel } from "../models/blog.model.js";
 import fs from "fs";
 
 export const createBlog = async (req, res) => {
@@ -96,7 +96,9 @@ export const deleteBlog = async (req, res) => {
 
 export const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await BlogModel.find()
+    const { userId } = req.query;
+    const payload = userId ? { userId } : {};
+    const blogs = await BlogModel.find(payload)
       .populate("userId", "username profileImagePath")
       .sort({ createdAt: -1 })
       .limit(50);
@@ -121,5 +123,33 @@ export const getBlogById = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
+  }
+};
+
+export const addCategory = async (req, res) => {
+  try {
+    const { category } = req.body;
+    if (!category) {
+      return res.status(400).json({ message: "please send category" });
+    }
+    await CategoryModel.create({ category });
+    res.status(200).json({ message: "Category added successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+export const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "please send category id" });
+    }
+    await CategoryModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 };

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import userModel from "./user.model.js";
 
 const blogSchema = new mongoose.Schema(
@@ -14,6 +14,12 @@ const blogSchema = new mongoose.Schema(
   }
 );
 
+const categorySchema = new mongoose.Schema({
+  category: { type: String, required: true },
+});
+
 const BlogModel = mongoose.model("blog", blogSchema);
+
+export const CategoryModel = mongoose.model("Category", categorySchema);
 
 export default BlogModel;

@@ -1,20 +1,11 @@
-import {
-  Input,
-  Text,
-  useToast,
-  Box,
-  Center,
-  VStack,
-  FormLabel,
-} from "@chakra-ui/react";
+import { Input, Text, Box, Center, VStack, FormLabel } from "@chakra-ui/react";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
-
-const registerToastId = "registerToastId";
+import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
@@ -25,7 +16,7 @@ const Register = () => {
   const { isLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
 
-  const toast = useToast();
+  const customToast = useCustomToast();
 
   const registerHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,30 +39,17 @@ const Register = () => {
     });
 
     if (response.ok) {
-      if (!toast.isActive(registerToastId)) {
-        toast({
-          id: registerToastId,
-          description: "Registered Successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Registered Successfully", CustomToastStatusEnum.success);
       navigate("/login");
       return;
     }
 
     const data: { message?: string } = await response.json();
 
-    if (!toast.isActive(registerToastId)) {
-      toast({
-        id: registerToastId,
-        description: data.message || "Something went wrong, Please try again",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    customToast(
+      data.message || "Something went wrong, Please try again",
+      CustomToastStatusEnum.error
+    );
   };
 
   useEffect(() => {

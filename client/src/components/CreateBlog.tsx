@@ -1,4 +1,4 @@
-import { Box, Center, Input, Text, Textarea, useToast } from "@chakra-ui/react";
+import { Box, Center, Input, Text, Textarea } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import { useNavigate } from "react-router-dom";
@@ -8,8 +8,7 @@ import { FileUpload } from "@emotion-icons/material/FileUpload";
 import { FileEarmarkImage } from "@emotion-icons/bootstrap/FileEarmarkImage";
 import useApi from "../hooks/useApi";
 import { FormSubmitButton } from "./common/Button";
-
-const createBlogToastId = "createBlogToastId";
+import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 
 const CreateBlog = () => {
   const { isLoggedIn, userId } = useContext(LoginContext);
@@ -19,33 +18,17 @@ const CreateBlog = () => {
   const [description, setDescription] = useState<string>("");
   const [image, setImage] = useState<FileList | null>(null);
   const [content, setContent] = useState<string>("");
-  const toast = useToast();
+  const customToast = useCustomToast();
 
   const handleCreatePost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!image) {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "Image cannot be empty",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Image cannot be empty", CustomToastStatusEnum.error);
       return;
     }
 
     if (content === "") {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "Blog content cannot be empty",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Blog content cannot be empty", CustomToastStatusEnum.error);
       return;
     }
 
@@ -64,30 +47,17 @@ const CreateBlog = () => {
     });
 
     if (res.ok) {
-      if (!toast.isActive(createBlogToastId)) {
-        toast({
-          id: createBlogToastId,
-          description: "Blog created successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Blog created successfully", CustomToastStatusEnum.success);
       navigate("/");
       return;
     }
 
     const data: { message?: string } = await res.json();
 
-    if (!toast.isActive(createBlogToastId)) {
-      toast({
-        id: createBlogToastId,
-        description: data.message || "Something went wrong, Please try again",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    customToast(
+      data.message || "Something went wrong, Please try again",
+      CustomToastStatusEnum.error
+    );
   };
 
   useEffect(() => {

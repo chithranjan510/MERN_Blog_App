@@ -10,7 +10,6 @@ import {
   Image,
   Input,
   Text,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { Camera } from "@emotion-icons/bootstrap/Camera";
@@ -20,9 +19,7 @@ import useApi from "../hooks/useApi";
 import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { FormSubmitButton } from "./common/Button";
-import useImageApi from "../hooks/useImageApi";
-
-const profileToastId = "profileToastId";
+import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 
 interface UpdateProfilePayload {
   username: string;
@@ -34,32 +31,35 @@ const Profile = () => {
   const { userId, profileImagePath, isLoggedIn, setProfileImagePath } =
     useContext(LoginContext);
   const navigate = useNavigate();
-  const { uploadImage, deleteImage } = useImageApi();
-  const toast = useToast();
+  const customToast = useCustomToast();
+  const { api } = useApi();
 
   const uploadProfileImage = async (file: FileList | null) => {
     if (!file || !userId) {
       return;
     }
 
-    const res: Response = await uploadImage({ userId, file });
+    const formData = new FormData();
+    formData.set("profileImage", file[0]);
 
-    const data: { imagePath: string; message?: string } = await res.json();
+    const res: Response = await api(`/auth/profileImage/${userId}`, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    const data: { profileImagePath: string; message?: string } =
+      await res.json();
 
     if (res.ok) {
-      setProfileImagePath(data.imagePath);
+      setProfileImagePath(data.profileImagePath);
       return;
     }
 
-    if (!toast.isActive(profileToastId)) {
-      toast({
-        id: profileToastId,
-        description: data.message || "Something went wrong, Please try again",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    customToast(
+      data.message || "Something went wrong, Please try again",
+      CustomToastStatusEnum.error
+    );
   };
 
   const deleteProfileImage = async () => {
@@ -67,10 +67,13 @@ const Profile = () => {
       return;
     }
 
-    const res: Response = await deleteImage({
-      userId,
-      imagePath: profileImagePath,
-    });
+    const res: Response = await api(
+      `/auth/profileImage/${userId}/?profileImagePath=${profileImagePath}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
 
     const data: { message?: string } = await res.json();
 
@@ -79,15 +82,10 @@ const Profile = () => {
       return;
     }
 
-    if (!toast.isActive(profileToastId)) {
-      toast({
-        id: profileToastId,
-        description: data.message || "Something went wrong, Please try again",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    customToast(
+      data.message || "Something went wrong, Please try again",
+      CustomToastStatusEnum.error
+    );
   };
 
   useEffect(() => {
@@ -186,7 +184,7 @@ const UserDetails = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const toast = useToast();
+  const customToast = useCustomToast();
   const { api } = useApi();
   const navigate = useNavigate();
 
@@ -194,28 +192,15 @@ const UserDetails = () => {
     e.preventDefault();
 
     if (!username && !email && !password && !confirmPassword) {
-      if (!toast.isActive(profileToastId)) {
-        toast({
-          id: profileToastId,
-          description: "Atleast one field is required",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast("Atleast one field is required", CustomToastStatusEnum.error);
       return;
     }
 
     if (password !== confirmPassword) {
-      if (!toast.isActive(profileToastId)) {
-        toast({
-          id: profileToastId,
-          description: "Please confirm your password correctly",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      customToast(
+        "Please confirm your password correctly",
+        CustomToastStatusEnum.error
+      );
       return;
     }
 
@@ -241,29 +226,20 @@ const UserDetails = () => {
       });
 
       if (res.ok) {
-        if (!toast.isActive(profileToastId)) {
-          toast({
-            id: profileToastId,
-            description: "Profile updated Successfully",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
+        customToast(
+          "Profile updated Successfully",
+          CustomToastStatusEnum.success
+        );
         setIsEdit(false);
         navigate("/profile");
       }
 
       const data = await res.json();
-      if (!toast.isActive(profileToastId)) {
-        toast({
-          id: profileToastId,
-          description: data.message || "Something wen wrong please try again",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+
+      customToast(
+        data.message || "Something wen wrong please try again",
+        CustomToastStatusEnum.error
+      );
     } catch (error) {
       console.log(error);
     }
