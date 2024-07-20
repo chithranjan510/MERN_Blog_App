@@ -1,4 +1,4 @@
-import { Box, Center, Input, Text, Textarea } from "@chakra-ui/react";
+import { Box, Button, Center, Input, Text, Textarea } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import { useNavigate } from "react-router-dom";
@@ -9,16 +9,32 @@ import { FileEarmarkImage } from "@emotion-icons/bootstrap/FileEarmarkImage";
 import useApi from "../hooks/useApi";
 import { FormSubmitButton } from "./common/Button";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
+import { GetCategoryInterface } from "./Home";
+import useCommonApi from "../hooks/useCommonApi";
 
 const CreateBlog = () => {
   const { isLoggedIn, userId } = useContext(LoginContext);
   const navigate = useNavigate();
   const { api } = useApi();
+  const { addCategory } = useCommonApi();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [image, setImage] = useState<FileList | null>(null);
   const [content, setContent] = useState<string>("");
+  const [isNewCategoryAdded, setIsNewCategoryAdded] = useState<boolean>(false);
   const customToast = useCustomToast();
+  const [selectedCategory, setSelectedCategory] =
+    useState<GetCategoryInterface>({ _id: "", category: "" });
+  const [availableCategory, setAvailableCategory] = useState<
+    GetCategoryInterface[]
+  >([]);
+
+  const blogCategoryOptions = availableCategory.filter(
+    (d: GetCategoryInterface) =>
+      d.category
+        .toLocaleLowerCase()
+        .includes(selectedCategory.category.toLocaleLowerCase())
+  );
 
   const handleCreatePost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,6 +54,7 @@ const CreateBlog = () => {
     formData.set("title", title);
     formData.set("description", description);
     formData.set("content", content);
+    formData.set("categoryId", selectedCategory._id);
     formData.set("blogImage", image[0]);
 
     const res = await api("/blog/create", {
@@ -60,16 +77,132 @@ const CreateBlog = () => {
     );
   };
 
+  const addNewCategory = async () => {
+    const res = await addCategory(selectedCategory.category);
+
+    if (res.ok) {
+      setSelectedCategory({ _id: "", category: "" });
+      setIsNewCategoryAdded((prev) => !prev);
+      customToast("Category added successfully", CustomToastStatusEnum.success);
+      return;
+    }
+  };
+
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/login");
     }
   }, [isLoggedIn, navigate]);
 
+  useEffect(() => {
+    api("/blogCategory", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setAvailableCategory(data);
+      })
+      .catch((err) => console.log(err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNewCategoryAdded]);
+
+  useEffect(() => {
+    const input = document.getElementById("createPageBlogCategoryInput");
+    const container = document.getElementById(
+      "createPageBlogCategoryContainer"
+    );
+
+    if (input && container) {
+      input.addEventListener("focus", () => {
+        container.style.display = "block";
+      });
+
+      input.addEventListener("blur", () => {
+        setTimeout(() => {
+          container.style.display = "none";
+        }, 300);
+      });
+    }
+  }, []);
+
   return (
-    <Box py={[5, 10, 20]} px={[5, 10, 20, "200px"]}>
+    <Box
+      py={[5, 10, 20]}
+      px={[5, 10, 20, "200px"]}
+      mt={["62px", "72px", null, "74px"]}
+    >
       <Box p={[5, 10]} bgColor="#fff" borderRadius="12px">
         <form onSubmit={handleCreatePost}>
+          <Box w="100%" position="relative" mb={5}>
+            <Input
+              id="createPageBlogCategoryInput"
+              border="1px solid #ccc"
+              bgColor="#fff"
+              placeholder="Select category"
+              value={selectedCategory.category}
+              autoComplete="off"
+              maxLength={30}
+              onChange={(e) =>
+                setSelectedCategory((prev) => ({
+                  ...prev,
+                  category: e.target.value,
+                }))
+              }
+            />
+            <Box
+              id="createPageBlogCategoryContainer"
+              display="none"
+              position="absolute"
+              w="100%"
+              maxH="250px"
+              overflowY="auto"
+              top="50px"
+              bgColor="#fff"
+              borderRadius="8px"
+              zIndex={10}
+              border="2px solid steelBlue"
+              css={{
+                "&::-webkit-scrollbar": {
+                  width: "0",
+                },
+                "&::-webkit-scrollbar-track": {
+                  width: "0",
+                },
+              }}
+            >
+              {blogCategoryOptions.length === 0 ? (
+                <Box p={3}>
+                  {isLoggedIn ? (
+                    <Button w="100%" onClick={addNewCategory}>
+                      Add above value to category
+                    </Button>
+                  ) : (
+                    <Text textAlign="center">No Data Found</Text>
+                  )}
+                </Box>
+              ) : (
+                blogCategoryOptions.map((category, index) => {
+                  return (
+                    <Text
+                      key={index}
+                      w="100%"
+                      h="40px"
+                      py="5px"
+                      px="20px"
+                      cursor="pointer"
+                      _hover={{ bgColor: "#eee" }}
+                      onClick={() => {
+                        setTimeout(() => setSelectedCategory(category), 100);
+                      }}
+                      textTransform="capitalize"
+                    >
+                      {category.category}
+                    </Text>
+                  );
+                })
+              )}
+            </Box>
+          </Box>
           <Box
             w="100%"
             aspectRatio="16/9"

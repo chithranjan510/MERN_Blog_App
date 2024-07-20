@@ -8,6 +8,7 @@ export interface LoginContextInterface {
   userId: string | null;
   profileImagePath: string | null;
   isLoggedIn: boolean;
+  isAdmin: boolean;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   setProfileImagePath: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -18,6 +19,7 @@ export const LoginContext = createContext<LoginContextInterface>({
   userId: null,
   profileImagePath: null,
   isLoggedIn: false,
+  isAdmin: false,
   setIsLoggedIn: () => {},
   setProfileImagePath: () => {},
 });
@@ -25,6 +27,8 @@ export const LoginContext = createContext<LoginContextInterface>({
 const LoginContextProvider = ({ children }: { children: ReactNode }) => {
   const token = Cookies.get("token");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(token));
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [username, setUsername] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -39,6 +43,8 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    setIsLoading(true);
+
     api("/auth/profile", {
       method: "GET",
       credentials: "include",
@@ -48,14 +54,21 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
         setUsername(data.username);
         setUserId(data.id);
         setEmail(data.email);
+        setIsAdmin(data.isAdmin);
         setProfileImagePath(data.profileImagePath);
+        setIsLoading(false);
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err);
       });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+
+  if (isLoading) {
+    return <></>;
+  }
 
   return (
     <LoginContext.Provider
@@ -65,6 +78,7 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
         profileImagePath,
         userId,
         isLoggedIn,
+        isAdmin,
         setIsLoggedIn,
         setProfileImagePath,
       }}

@@ -1,9 +1,7 @@
 import { Router } from "express";
 import {
-  addCategory,
   createBlog,
   deleteBlog,
-  deleteCategory,
   editBlog,
   getAllBlogs,
   getBlogById,
@@ -29,9 +27,5 @@ blogRouter.put(
 );
 
 blogRouter.delete("/delete/:id", authorizeMiddleware, deleteBlog);
-
-blogRouter.post("/category", authorizeMiddleware, addCategory);
-
-blogRouter.delete("/category/:id", authorizeMiddleware, deleteCategory);
 
 export default blogRouter;

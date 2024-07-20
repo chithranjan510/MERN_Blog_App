@@ -6,6 +6,7 @@ import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
+import useApi from "../hooks/useApi";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
@@ -15,6 +16,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const { isLoggedIn } = useContext(LoginContext);
   const navigate = useNavigate();
+  const { api } = useApi();
 
   const customToast = useCustomToast();
 
@@ -30,7 +32,7 @@ const Register = () => {
       password,
     };
 
-    const response = await fetch("http://localhost:5000/api/auth/register", {
+    const response = await api("/auth/register", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -59,7 +61,11 @@ const Register = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <Box px={[5, 10, null, 20]} py={[10, null, 20]}>
+    <Box
+      px={[5, 10, null, 20]}
+      py={[10, null, 20]}
+      mt={["62px", "72px", null, "74px"]}
+    >
       <Box
         p={[5, 10]}
         maxW="500px"

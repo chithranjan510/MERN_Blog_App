@@ -20,6 +20,7 @@ import { Visibility } from "@emotion-icons/material/Visibility";
 import { VisibilityOff } from "@emotion-icons/material/VisibilityOff";
 import { FormSubmitButton } from "./common/Button";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
+import { REACT_APP_BACKEND_URL } from "../App";
 
 interface UpdateProfilePayload {
   username: string;
@@ -96,7 +97,11 @@ const Profile = () => {
   }, [isLoggedIn]);
 
   return (
-    <Box py={[10, null, null, 20]} px={[5, 10, null, 20]}>
+    <Box
+      py={[10, null, null, 20]}
+      px={[5, 10, null, 20]}
+      mt={["62px", "72px", null, "74px"]}
+    >
       <Box
         maxW="500px"
         p={[7, 10]}
@@ -126,7 +131,7 @@ const Profile = () => {
             {profileImagePath ? (
               <Box position="absolute" top={0} left={0} right={0} bottom={0}>
                 <Image
-                  src={`http://localhost:5000/${profileImagePath}`}
+                  src={`${REACT_APP_BACKEND_URL}/${profileImagePath}`}
                   w="100%"
                   h="100%"
                 />

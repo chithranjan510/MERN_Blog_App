@@ -13,6 +13,7 @@ import { GetPostInterface } from "./Home";
 import CustomSpinner from "./common/CustomSpinner";
 import NoDataFound from "./common/NoDataFound";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
+import { REACT_APP_BACKEND_URL } from "../App";
 
 const EditBlog = () => {
   const { isLoggedIn, userId } = useContext(LoginContext);
@@ -120,7 +121,11 @@ const EditBlog = () => {
   }
 
   return (
-    <Box py={[5, 10, 20]} px={[5, 10, 20, "200px"]}>
+    <Box
+      py={[5, 10, 20]}
+      px={[5, 10, 20, "200px"]}
+      mt={["62px", "72px", null, "74px"]}
+    >
       <Box p={[5, 10]} bgColor="#fff" borderRadius="12px">
         <form onSubmit={handleCreatePost}>
           <Box
@@ -145,7 +150,7 @@ const EditBlog = () => {
             {imageSrc ? (
               <Box position="absolute" top={0} left={0} right={0} bottom={0}>
                 <Image
-                  src={`http://localhost:5000/${imageSrc}`}
+                  src={`${REACT_APP_BACKEND_URL}/${imageSrc}`}
                   alt="blog-post"
                   w="100%"
                   h="100%"

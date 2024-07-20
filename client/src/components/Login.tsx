@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
+import useApi from "../hooks/useApi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ const Login = () => {
 
   const customToast = useCustomToast();
   const navigate = useNavigate();
+  const { api } = useApi();
 
   const loginHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ const Login = () => {
       password,
     };
 
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await api("/auth/login", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
@@ -53,7 +55,11 @@ const Login = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <Box px={[5, 10, null, 20]} py={[10, null, 20]}>
+    <Box
+      px={[5, 10, null, 20]}
+      py={[10, null, 20]}
+      mt={["62px", "72px", null, "74px"]}
+    >
       <Box
         p={[5, 10]}
         maxW="500px"

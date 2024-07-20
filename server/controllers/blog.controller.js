@@ -1,13 +1,14 @@
 import path from "path";
-import BlogModel, { CategoryModel } from "../models/blog.model.js";
+import BlogModel from "../models/blog.model.js";
 import fs from "fs";
 
 export const createBlog = async (req, res) => {
   try {
-    const { title, description, content, userId } = req.body;
+    const { title, description, content, userId, categoryId } = req.body;
     const coverImagePath = req.file.path;
     const payload = {
       userId,
+      categoryId,
       title,
       description,
       content,
@@ -96,12 +97,24 @@ export const deleteBlog = async (req, res) => {
 
 export const getAllBlogs = async (req, res) => {
   try {
-    const { userId } = req.query;
-    const payload = userId ? { userId } : {};
+    const { userId, categoryId } = req.query;
+
+    const payload =
+      userId && categoryId
+        ? { userId, categoryId }
+        : userId
+        ? { userId }
+        : categoryId
+        ? { categoryId }
+        : {};
+
+    console.log(userId, categoryId);
+
     const blogs = await BlogModel.find(payload)
       .populate("userId", "username profileImagePath")
+      .populate("categoryId", "category _id")
       .sort({ createdAt: -1 })
-      .limit(50);
+      .limit(100);
     res.status(200).json(blogs);
   } catch (error) {
     console.log(error);
@@ -123,33 +136,5 @@ export const getBlogById = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
-  }
-};
-
-export const addCategory = async (req, res) => {
-  try {
-    const { category } = req.body;
-    if (!category) {
-      return res.status(400).json({ message: "please send category" });
-    }
-    await CategoryModel.create({ category });
-    res.status(200).json({ message: "Category added successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
-};
-
-export const deleteCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ message: "please send category id" });
-    }
-    await CategoryModel.findByIdAndDelete(id);
-    res.status(200).json({ message: "Category deleted successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
   }
 };

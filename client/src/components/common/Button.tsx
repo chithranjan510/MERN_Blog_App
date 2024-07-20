@@ -11,7 +11,7 @@ export const FormSubmitButton = ({
       color="#fff"
       bgGradient="linear(to-br, yellow.500, orange.600)"
       _hover={{
-        boxShadow: "4px 4px 8px #000",
+        // boxShadow: "4px 4px 8px #000",
       }}
       borderRadius="10px"
       h="50px"

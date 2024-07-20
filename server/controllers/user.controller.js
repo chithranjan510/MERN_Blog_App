@@ -52,8 +52,9 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const data = await userModel.create({
+    await userModel.create({
       ...req.body,
+      isAdmin: false,
       password: hashedPassword,
     });
     res.status(200).json({ message: "User registered successfully" });
@@ -76,6 +77,7 @@ export const userProfile = async (req, res) => {
         username: userData.username,
         email: userData.email,
         id: userData._id,
+        isAdmin: userData.isAdmin,
         profileImagePath: userData.profileImagePath,
       });
     }

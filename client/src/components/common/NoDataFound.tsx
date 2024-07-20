@@ -1,15 +1,14 @@
-import { Box, Center, Text } from "@chakra-ui/react";
-import { FileEarmarkExcelFill } from "@emotion-icons/bootstrap/FileEarmarkExcelFill";
+import { Center, Image, Text, VStack } from "@chakra-ui/react";
 
 const NoDataFound = () => {
   return (
-    <Center w="100%" h="80vh">
-      <Box textAlign="center">
-        <FileEarmarkExcelFill width="100px" opacity={0.5} />
-        <Text pt={5} fontSize="24px" fontWeight={500} opacity={0.7}>
+    <Center w="100%" h="50vh">
+      <VStack textAlign="center" spacing={0}>
+        <Image src="/noDataFound.svg" w="200px" />
+        <Text pt={5} fontSize="30px" fontWeight={700} color="#fff">
           No Data Found
         </Text>
-      </Box>
+      </VStack>
     </Center>
   );
 };

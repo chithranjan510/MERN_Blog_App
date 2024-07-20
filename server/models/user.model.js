@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema(
     profileImagePath: {
       type: String,
     },
+    isAdmin: {
+      type: Boolean,
+      require: true,
+    },
   },
   { timestamps: true }
 );

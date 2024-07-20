@@ -1,57 +1,28 @@
 import {
   Avatar,
   Box,
-  Button,
+  Center,
   HStack,
   Image,
   Input,
   SimpleGrid,
-  Stack,
-  Switch,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import useApi from "../hooks/useApi";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NoDataFound from "./common/NoDataFound";
 import CustomSpinner from "./common/CustomSpinner";
 import { getBlogDate } from "../utils/getDate";
-import { PlusCircle } from "@emotion-icons/bootstrap/PlusCircle";
-import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
-
-const blogCategories: string[] = [
-  "Finance",
-  "Agriculture",
-  "Technology",
-  "Health & Wellness",
-  "Travel",
-  "Food & Cooking",
-  "Lifestyle",
-  "Fashion",
-  "Education",
-  "Entertainment",
-  "Sports",
-  "Business",
-  "Personal Development",
-  "Parenting",
-  "Science",
-  "Environment",
-  "Politics",
-  "Art & Design",
-  "Real Estate",
-  "Automotive",
-  "Home Improvement",
-  "DIY & Crafts",
-  "Relationships",
-  "History",
-  "Books & Literature",
-];
+import { REACT_APP_BACKEND_URL } from "../App";
+import { Clear } from "@emotion-icons/material-twotone/Clear";
 
 export interface GetPostInterface {
   _id: string;
   userId: { profileImagePath: string | null; username: string; _id: string };
+  categoryId: { category: string; _id: string };
   title: string;
   description: string;
   coverImagePath: string;
@@ -59,35 +30,40 @@ export interface GetPostInterface {
   createdAt: string;
 }
 
+export interface GetCategoryInterface {
+  _id: string;
+  category: string;
+}
+
+export interface PostFilterInterface {
+  myPost: boolean;
+  categoryId: string;
+}
+
 const Home = () => {
   const { isLoggedIn } = useContext(LoginContext);
   const [loading, setLoading] = useState<boolean>(true);
-  const [myPost, setMyPost] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [postFilters, setPostFilters] = useState<PostFilterInterface>({
+    myPost: false,
+    categoryId: "",
+  });
+  const [selectedCategory, setSelectedCategory] =
+    useState<GetCategoryInterface>({ _id: "", category: "" });
+  const [availableCategory, setAvailableCategory] = useState<
+    GetCategoryInterface[]
+  >([]);
   const { api } = useApi();
-  const customToast = useCustomToast();
 
-  const blogCategoryOptions = blogCategories.filter((d) =>
-    d.toLocaleLowerCase().includes(selectedCategory.toLocaleLowerCase())
+  const blogCategoryOptions = availableCategory.filter(
+    (d: GetCategoryInterface) =>
+      d.category
+        .toLocaleLowerCase()
+        .includes(selectedCategory.category.toLocaleLowerCase())
   );
 
-  const addCategory = async () => {
-    const res = await api("/blog/category", {
-      method: "POST",
-      body: JSON.stringify({ category: selectedCategory.toLocaleLowerCase() }),
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (res.ok) {
-      customToast("Category added successfully", CustomToastStatusEnum.success);
-      return;
-    }
-  };
-
   useEffect(() => {
-    const input = document.getElementById("blogCategoryInput");
-    const container = document.getElementById("blogCategoryContainer");
+    const input = document.getElementById("homePageBlogCategoryInput");
+    const container = document.getElementById("homePageBlogCategoryContainer");
 
     if (input && container) {
       input.addEventListener("focus", () => {
@@ -102,67 +78,95 @@ const Home = () => {
     }
   }, []);
 
+  useEffect(() => {
+    api("/blogCategory", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => setAvailableCategory(data))
+      .catch((err) => console.log(err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Box px={[5, 10, null, 20]} py={[5, 8, 14]}>
-      <Stack
+    <Box>
+      <HStack
         w="100%"
-        direction={["column", null, "row"]}
-        mb={[5, 10]}
-        justifyContent="space-between"
-        spacing={5}
+        px={[5, 7, null, 10]}
+        pt={["70px", null, 10]}
+        pb={[4, null, 5]}
+        justifyContent={isLoggedIn ? "space-between" : "flex-end"}
+        spacing={3}
+        position="sticky"
+        top={0}
+        bgColor="gray.800"
+        zIndex={10}
       >
         {isLoggedIn && (
-          <HStack w={["100%", null, "fit-content"]} justify="space-between">
-            <Link to="/create">
-              <Button
-                h="40px"
-                w={["100%", null, "100%"]}
-                color="#fff"
-                bgColor="orange.500"
-                _hover={{
-                  bgColor: "orange.600",
-                }}
-                leftIcon={<PlusCircle width="18px" />}
-              >
-                Create new post
-              </Button>
-            </Link>
-            <HStack
-              h="40px"
-              w="120px"
-              borderRadius="6px"
-              bgColor="gray.700"
-              color="#fff"
+          <Center
+            h="40px"
+            px={[2, 4]}
+            borderRadius="6px"
+            bgColor={postFilters.myPost ? "green.100" : "none"}
+            border="1px"
+            borderColor={postFilters.myPost ? "gray.600" : "#fff"}
+            color={postFilters.myPost ? "orange.700" : "#fff"}
+            cursor="pointer"
+            onClick={() => {
+              setPostFilters((prev) => ({ ...prev, myPost: !prev.myPost }));
+              setLoading(true);
+            }}
+            fontWeight={500}
+          >
+            <Text display={["block", "block"]} fontSize="14px">
+              My Post
+            </Text>
+          </Center>
+        )}
+        <Box w="250px" h="42px" position="relative">
+          {selectedCategory.category !== "" && (
+            <Center
+              w="42px"
+              h="42px"
+              position="absolute"
+              right={0}
+              top={0}
+              zIndex={10}
+              borderRadius="5px"
               cursor="pointer"
               onClick={() => {
-                setMyPost((prev) => !prev);
-                setLoading(true);
+                setSelectedCategory({ _id: "", category: "" });
+                setPostFilters((prev) => ({
+                  ...prev,
+                  categoryId: "",
+                }));
               }}
-              justifyContent="center"
             >
-              <Text fontWeight={500}>My Post</Text>
-              <Switch size="md" isChecked={myPost} pointerEvents="none" />
-            </HStack>
-          </HStack>
-        )}
-        <Box
-          minW={["100%", null, "300px"]}
-          maxW={["100%", null, "400px"]}
-          h="42px"
-          position="relative"
-        >
+              <Clear width="20px" color="#000" />
+            </Center>
+          )}
           <Input
-            id="blogCategoryInput"
+            id="homePageBlogCategoryInput"
             w="100%"
             h="100%"
-            border="1px solid #ccc"
-            bgColor="#fff"
+            pr="42px"
+            border="none"
+            bgColor="gray.600"
             placeholder="Filter by category"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={selectedCategory.category}
+            autoComplete="off"
+            onChange={(e) =>
+              setSelectedCategory((prev) => ({
+                ...prev,
+                category: e.target.value,
+              }))
+            }
+            _placeholder={{
+              color: "#fff",
+            }}
           />
           <Box
-            id="blogCategoryContainer"
+            id="homePageBlogCategoryContainer"
             display="none"
             position="absolute"
             w="100%"
@@ -184,13 +188,7 @@ const Home = () => {
           >
             {blogCategoryOptions.length === 0 ? (
               <Box p={3}>
-                {!isLoggedIn ? (
-                  <Button w="100%" onClick={() => addCategory}>
-                    Add above value to category
-                  </Button>
-                ) : (
-                  <Text textAlign="center">No Data Found</Text>
-                )}
+                <Text textAlign="center">No Data Found</Text>
               </Box>
             ) : (
               blogCategoryOptions.map((category, index) => {
@@ -204,19 +202,26 @@ const Home = () => {
                     cursor="pointer"
                     _hover={{ bgColor: "#eee" }}
                     onClick={() => {
-                      setTimeout(() => setSelectedCategory(category), 100);
+                      setTimeout(() => {
+                        setSelectedCategory(category);
+                        setPostFilters((prev) => ({
+                          ...prev,
+                          categoryId: category._id,
+                        }));
+                      }, 100);
                     }}
+                    textTransform="capitalize"
                   >
-                    {category}
+                    {category.category}
                   </Text>
                 );
               })
             )}
           </Box>
         </Box>
-      </Stack>
+      </HStack>
       <HomaPageContent
-        myPost={myPost}
+        postFilters={postFilters}
         loading={loading}
         setLoading={setLoading}
       />
@@ -225,11 +230,11 @@ const Home = () => {
 };
 
 const HomaPageContent = ({
-  myPost,
+  postFilters,
   loading,
   setLoading,
 }: {
-  myPost: boolean;
+  postFilters: PostFilterInterface;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -238,8 +243,17 @@ const HomaPageContent = ({
   const { userId } = useContext(LoginContext);
   const { api } = useApi();
 
+  const url =
+    postFilters.myPost && postFilters.categoryId
+      ? `/blog/?userId=${userId}&categoryId=${postFilters.categoryId}`
+      : postFilters.myPost
+      ? `/blog/?userId=${userId}`
+      : postFilters.categoryId
+      ? `/blog/?categoryId=${postFilters.categoryId}`
+      : "/blog";
+
   useEffect(() => {
-    api(myPost ? `/blog/?userId=${userId}` : "/blog", {
+    api(url, {
       method: "GET",
       credentials: "include",
     })
@@ -253,7 +267,7 @@ const HomaPageContent = ({
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myPost]);
+  }, [JSON.stringify(postFilters)]);
 
   if (loading) {
     return <CustomSpinner />;
@@ -268,10 +282,14 @@ const HomaPageContent = ({
       templateColumns={[
         "minmax(0, 1fr)",
         "repeat(2, minmax(0, 1fr))",
-        null,
+        "minmax(0, 1fr)",
+        "repeat(2, minmax(0, 1fr))",
         "repeat(3, minmax(0, 1fr))",
       ]}
       gap={[5, 10]}
+      px={[7, null, 10]}
+      pb={[7, null, 10]}
+      pt={[3, null, 5]}
     >
       {blogs.map((post, index) => {
         return (
@@ -281,7 +299,6 @@ const HomaPageContent = ({
             alignItems="stretch"
             borderRadius="16px"
             overflow="hidden"
-            boxShadow="0px 0px 8px #aaa"
             position="relative"
             cursor="pointer"
             spacing={0}
@@ -293,12 +310,12 @@ const HomaPageContent = ({
               transform: "scale(1.02)",
             }}
             transition="all 0.2s ease"
-            maxW="400px"
+            maxW={["100%", null, null, "300px"]}
             mx="auto"
           >
             <Box overflow="hidden" maxH="200px" mb={3} borderRadius="10px">
               <Image
-                src={"http://localhost:5000/" + post.coverImagePath}
+                src={`${REACT_APP_BACKEND_URL}/${post.coverImagePath}`}
                 alt="post"
                 aspectRatio="16/9"
                 objectFit="cover"
@@ -314,7 +331,7 @@ const HomaPageContent = ({
               >
                 {post.title}
               </Text>
-              <Text fontSize={["12px", "13px", null, "14px"]} noOfLines={5}>
+              <Text fontSize={["12px", "13px", null, "14px"]} noOfLines={4}>
                 {post.description}
               </Text>
             </Box>
@@ -324,24 +341,21 @@ const HomaPageContent = ({
               fontWeight={500}
               spacing={5}
               alignItems="center"
-              px={3}
-              py={2}
+              p={2}
             >
               <HStack>
                 <Avatar
                   name={post.userId.username}
                   src={
                     post.userId.profileImagePath
-                      ? `http://localhost:5000/${post.userId.profileImagePath}`
+                      ? `${REACT_APP_BACKEND_URL}/${post.userId.profileImagePath}`
                       : ""
                   }
                   size="xs"
                 />
-                <Box>
-                  <Text fontSize={["12px", "13px", null, "14px"]}>
-                    {post.userId.username}
-                  </Text>
-                </Box>
+                <Text fontSize={["12px", "13px", null, "14px"]}>
+                  {post.userId.username}
+                </Text>
               </HStack>
               <Text
                 fontSize={["11px", "12px", null, "13px"]}
@@ -351,6 +365,20 @@ const HomaPageContent = ({
                 {getBlogDate(post.createdAt)}
               </Text>
             </SimpleGrid>
+            <Text
+              w="100%"
+              textAlign="center"
+              px={3}
+              py={2}
+              borderBottomRadius="10px"
+              bgColor="gray.600"
+              color="#fff"
+              fontWeight={500}
+              textTransform="capitalize"
+              fontSize={["12px", "14px", null, "16px"]}
+            >
+              {post.categoryId.category}
+            </Text>
           </VStack>
         );
       })}

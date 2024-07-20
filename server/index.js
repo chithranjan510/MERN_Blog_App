@@ -7,8 +7,11 @@ import dotenv from "dotenv";
 import userRouter from "./routers/user.router.js";
 import blogRouter from "./routers/blog.router.js";
 import authorRouter from "./routers/author.router.js";
+import blogCategoryRouter from "./routers/blogCategory.router.js";
 dotenv.config();
 const app = express();
+
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -20,11 +23,11 @@ app.use(
 );
 app.use("/uploads", express.static(path.join(import.meta.dirname, "uploads")));
 
-const PORT = process.env.PORT;
-
 app.use("/api/auth", userRouter);
 
 app.use("/api/blog", blogRouter);
+
+app.use("/api/blogCategory", blogCategoryRouter);
 
 app.use("/api/authors", authorRouter);
 

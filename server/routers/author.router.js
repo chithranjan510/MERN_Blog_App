@@ -6,7 +6,9 @@ const authorRouter = Router();
 
 authorRouter.get("/", authorizeMiddleware, async (req, res) => {
   try {
-    const data = await userModel.find().select("username email profileImagePath -_id");
+    const data = await userModel
+      .find({ isAdmin: false })
+      .select("username email profileImagePath _id");
 
     res.status(200).json(data);
   } catch (error) {

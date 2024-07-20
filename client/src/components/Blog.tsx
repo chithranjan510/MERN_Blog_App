@@ -18,6 +18,7 @@ import { Edit } from "@emotion-icons/boxicons-regular/Edit";
 import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
 import DeleteAlertModal from "./common/DeleteAlertModal";
 import { LoginContext } from "../context/LoginContext";
+import { REACT_APP_BACKEND_URL } from "../App";
 
 const Blog = () => {
   const [blog, setBlog] = useState<GetPostInterface | null>(null);
@@ -26,20 +27,17 @@ const Blog = () => {
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userId } = useContext(LoginContext);
+  const { userId, isAdmin } = useContext(LoginContext);
 
   const deletePost = () => {
     if (!blog) {
       return;
     }
 
-    fetch(
-      `http://localhost:5000/api/blog/delete/${blog._id}/?coverImagePath=${blog.coverImagePath}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      }
-    )
+    api(`/blog/delete/${blog._id}/?coverImagePath=${blog.coverImagePath}`, {
+      method: "DELETE",
+      credentials: "include",
+    })
       .then(() => {
         onClose();
         navigate("/");
@@ -70,7 +68,11 @@ const Blog = () => {
   }
 
   return (
-    <Box px={[8, 16, null, "150px"]} py={[5, 10, null, 20]}>
+    <Box
+      px={[8, 16, null, "150px"]}
+      py={[5, 10, null, 16]}
+      mt={["62px", "72px", null, "74px"]}
+    >
       <DeleteAlertModal
         isOpen={isOpen}
         onClose={onClose}
@@ -90,20 +92,18 @@ const Blog = () => {
           name={blog.userId.username}
           src={
             blog.userId.profileImagePath
-              ? `http://localhost:5000/${blog.userId.profileImagePath}`
+              ? `${REACT_APP_BACKEND_URL}/${blog.userId.profileImagePath}`
               : ""
           }
         />
         <Box>
-          <Text fontWeight={500} >
-            {blog.userId.username}
-          </Text>
+          <Text fontWeight={500}>{blog.userId.username}</Text>
           <Text fontWeight={600} opacity={0.7}>
             {getBlogDate(blog.createdAt)}
           </Text>
         </Box>
       </HStack>
-      {userId === blog.userId._id && (
+      {(userId === blog.userId._id || isAdmin) && (
         <HStack w="100%" justifyContent="center" mt={5}>
           <Link to={`/edit/${id}`}>
             <Button
@@ -135,10 +135,11 @@ const Blog = () => {
         </HStack>
       )}
       <Image
-        src={`http://localhost:5000/${blog.coverImagePath}`}
+        src={`${REACT_APP_BACKEND_URL}/${blog.coverImagePath}`}
         alt="coverImage"
         w="100%"
         mt={5}
+        borderRadius="10px"
       />
       <Box
         mt={[5, 10]}
