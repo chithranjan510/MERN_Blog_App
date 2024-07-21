@@ -23,7 +23,7 @@ import Profile from "./components/Profile";
 import Dashboard from "./components/Dashboard";
 import { MenuUnfold } from "@emotion-icons/remix-fill/MenuUnfold";
 
-export const REACT_APP_BACKEND_URL = "http://localhost:5000";
+export const REACT_APP_BACKEND_URL = "https://mern-blog-app-backend-p9d3.onrender.com";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
