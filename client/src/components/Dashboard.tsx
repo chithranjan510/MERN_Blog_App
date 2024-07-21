@@ -254,32 +254,32 @@ const UserPosts = ({
         description="Are your sure, you want to delete this post?"
       />
       <HStack w="100%" justifyContent="space-between" pb={[5, 7, 10]}>
-        <Text px={3} py={2} bgColor="#fff" borderRadius="6px" w="fit-content">
-          Total Posts:
-          <chakra.span pl={2} fontWeight={700}>
-            {selectedAuthorDetails.postCount}
-          </chakra.span>
-        </Text>
         <HStack spacing={3}>
-          <IconButton
+          <Button
             aria-label="back"
             color="#fff"
-            icon={<ArrowBackOutline width="20px" />}
+            leftIcon={<ArrowBackOutline width="20px" />}
             bgColor="gray.600"
             _hover={{ bgColor: "gray.700" }}
             _active={{}}
             onClick={() => setSelectedAuthorDetails(null)}
-          />
-          <Button
-            color="#fff"
-            bgColor="red.500"
-            _hover={{ bgColor: "red.600" }}
-            _active={{}}
-            onClick={onOpen}
-          >
-            Delete User
-          </Button>
+          >Back</Button>
+          <Text px={3} py={2} bgColor="#fff" borderRadius="6px" w="fit-content">
+            Posts:
+            <chakra.span pl={2} fontWeight={700}>
+              {selectedAuthorDetails.postCount}
+            </chakra.span>
+          </Text>
         </HStack>
+        <Button
+          color="#fff"
+          bgColor="red.500"
+          _hover={{ bgColor: "red.600" }}
+          _active={{}}
+          onClick={onOpen}
+        >
+          Delete User
+        </Button>
       </HStack>
       <SimpleGrid
         templateColumns={[

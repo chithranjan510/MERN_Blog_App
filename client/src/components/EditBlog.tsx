@@ -213,7 +213,7 @@ const EditBlog = () => {
           <ReactQuill
             value={content}
             onChange={(data) => setContent(data)}
-            style={{ height: "500px" }}
+            style={{ height: "400px" }}
           />
           <FormSubmitButton type="submit" mt={20} label="Edit Post" />
         </form>

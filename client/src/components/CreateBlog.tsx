@@ -258,7 +258,7 @@ const CreateBlog = () => {
           <ReactQuill
             value={content}
             onChange={(data) => setContent(data)}
-            style={{ height: "500px" }}
+            style={{ height: "400px" }}
           />
           <FormSubmitButton type="submit" mt={20} label="Create Post" />
         </form>
