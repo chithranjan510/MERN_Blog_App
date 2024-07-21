@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
+    origin:["https://mern-blog-app-frontend-g6t6.onrender.com"],
     credentials: true,
   })
 );
