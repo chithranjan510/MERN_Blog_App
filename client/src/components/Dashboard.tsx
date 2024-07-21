@@ -209,7 +209,6 @@ const UserPosts = ({
     })
       .then(() => {
         onClose();
-        navigate("/");
       })
       .catch((err) => console.log(err));
   };
@@ -263,7 +262,9 @@ const UserPosts = ({
             _hover={{ bgColor: "gray.700" }}
             _active={{}}
             onClick={() => setSelectedAuthorDetails(null)}
-          >Back</Button>
+          >
+            Back
+          </Button>
           <Text px={3} py={2} bgColor="#fff" borderRadius="6px" w="fit-content">
             Posts:
             <chakra.span pl={2} fontWeight={700}>

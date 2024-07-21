@@ -29,13 +29,15 @@ function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Box bgColor="gray.600">
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton color="#fff" />
-          <Sidebar />
-        </DrawerContent>
-      </Drawer>
+      {isOpen && (
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton color="#fff" />
+            <Sidebar />
+          </DrawerContent>
+        </Drawer>
+      )}
       <HStack
         bgColor="gray.800"
         w="100%"

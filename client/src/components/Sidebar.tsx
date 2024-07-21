@@ -48,6 +48,9 @@ const Sidebar = () => {
   >([]);
   const [categoryFilterInput, setCategoryFilterInput] = useState<string>("");
   const [userFilterInput, setUserFilterInput] = useState<string>("");
+  const [showCategoryContainer, setShowCategoryContainer] =
+    useState<boolean>(false);
+  const [showUserContainer, setShowUserContainer] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const { api } = useApi();
@@ -68,58 +71,6 @@ const Sidebar = () => {
     setIsLoggedIn(false);
     navigate("/login");
   };
-
-  useEffect(() => {
-    const input = document.getElementById("homePageBlogCategoryInput");
-    const container = document.getElementById("homePageBlogCategoryContainer");
-
-    if (input && container) {
-      const handleFocus = () => {
-        container.style.display = "block";
-      };
-
-      const handleBlur = () => {
-        setTimeout(() => {
-          container.style.display = "none";
-        }, 300);
-      };
-
-      input.addEventListener("focus", handleFocus);
-
-      input.addEventListener("blur", handleBlur);
-
-      return () => {
-        input.removeEventListener("focus", handleFocus);
-        input.removeEventListener("blur", handleBlur);
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    const input = document.getElementById("homePageBlogUserInput");
-    const container = document.getElementById("homePageBlogUserContainer");
-
-    if (input && container) {
-      const handleFocus = () => {
-        container.style.display = "block";
-      };
-
-      const handleBlur = () => {
-        setTimeout(() => {
-          container.style.display = "none";
-        }, 300);
-      };
-
-      input.addEventListener("focus", handleFocus);
-
-      input.addEventListener("blur", handleBlur);
-
-      return () => {
-        input.removeEventListener("focus", handleFocus);
-        input.removeEventListener("blur", handleBlur);
-      };
-    }
-  }, []);
 
   useEffect(() => {
     api("/blogCategory", {
@@ -188,7 +139,6 @@ const Sidebar = () => {
           </Center>
         )}
         <Input
-          id="homePageBlogCategoryInput"
           w="100%"
           h="100%"
           pr="40px"
@@ -202,10 +152,18 @@ const Sidebar = () => {
           _placeholder={{
             color: "#fff",
           }}
+          onFocus={() => {
+            setShowCategoryContainer(true);
+          }}
+          onBlur={() => {
+            setTimeout(() => {
+              setShowCategoryContainer(false);
+            }, 0);
+          }}
         />
         <Box
           id="homePageBlogCategoryContainer"
-          display="none"
+          display={showCategoryContainer ? "block" : "none"}
           position="absolute"
           w="100%"
           maxH="250px"
@@ -275,7 +233,6 @@ const Sidebar = () => {
           </Center>
         )}
         <Input
-          id="homePageBlogUserInput"
           w="100%"
           h="100%"
           pr="40px"
@@ -289,10 +246,18 @@ const Sidebar = () => {
           _placeholder={{
             color: "#fff",
           }}
+          onFocus={() => {
+            setShowUserContainer(true);
+          }}
+          onBlur={() => {
+            setTimeout(() => {
+              setShowUserContainer(false);
+            }, 0);
+          }}
         />
         <Box
           id="homePageBlogUserContainer"
-          display="none"
+          display={showUserContainer ? "block" : "none"}
           position="absolute"
           w="100%"
           maxH="250px"

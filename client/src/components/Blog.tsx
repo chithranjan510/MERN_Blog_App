@@ -55,7 +55,10 @@ const Blog = () => {
         setLoading(false);
         setBlog(data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
