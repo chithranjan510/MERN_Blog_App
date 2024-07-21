@@ -158,7 +158,7 @@ const Sidebar = () => {
           onBlur={() => {
             setTimeout(() => {
               setShowCategoryContainer(false);
-            }, 0);
+            }, 300);
           }}
         />
         <Box
@@ -252,7 +252,7 @@ const Sidebar = () => {
           onBlur={() => {
             setTimeout(() => {
               setShowUserContainer(false);
-            }, 0);
+            }, 300);
           }}
         />
         <Box
