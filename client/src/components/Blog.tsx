@@ -68,11 +68,7 @@ const Blog = () => {
   }
 
   return (
-    <Box
-      px={[8, 16, null, "150px"]}
-      py={[5, 10, null, 16]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Box color="#fff" px={[0, 5, 10]}>
       <DeleteAlertModal
         isOpen={isOpen}
         onClose={onClose}

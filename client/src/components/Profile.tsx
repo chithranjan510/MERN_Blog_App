@@ -43,7 +43,7 @@ const Profile = () => {
     const formData = new FormData();
     formData.set("profileImage", file[0]);
 
-    const res: Response = await api(`/auth/profileImage/${userId}`, {
+    const res: Response = await api(`/user/profileImage/${userId}`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -69,7 +69,7 @@ const Profile = () => {
     }
 
     const res: Response = await api(
-      `/auth/profileImage/${userId}/?profileImagePath=${profileImagePath}`,
+      `/user/profileImage/${userId}/?profileImagePath=${profileImagePath}`,
       {
         method: "DELETE",
         credentials: "include",
@@ -97,11 +97,7 @@ const Profile = () => {
   }, [isLoggedIn]);
 
   return (
-    <Box
-      py={[10, null, null, 20]}
-      px={[5, 10, null, 20]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Center w="100%" h="100%">
       <Box
         maxW="500px"
         p={[7, 10]}
@@ -134,6 +130,7 @@ const Profile = () => {
                   src={`${REACT_APP_BACKEND_URL}/${profileImagePath}`}
                   w="100%"
                   h="100%"
+                  objectFit="cover"
                 />
               </Box>
             ) : (
@@ -157,7 +154,7 @@ const Profile = () => {
           </Box>
           {Boolean(profileImagePath) && (
             <Button
-              leftIcon={<Delete width="22px" />}
+              leftIcon={<Delete width="18px" />}
               bgColor="red.600"
               color="#fff"
               border="2px solid #fff"
@@ -165,11 +162,13 @@ const Profile = () => {
               bottom={-2}
               _hover={{}}
               _active={{}}
-              minH="26px"
-              w={["90px", null, "100px"]}
-              h={["32px", "35px"]}
-              fontSize={["14px", "16px"]}
+              h="25px"
+              w="70px"
+              fontSize="12px"
               onClick={deleteProfileImage}
+              pr="20px"
+              pb="2px"
+              iconSpacing={1}
             >
               Delete
             </Button>
@@ -177,7 +176,7 @@ const Profile = () => {
         </VStack>
         <UserDetails />
       </Box>
-    </Box>
+    </Center>
   );
 };
 
@@ -223,7 +222,7 @@ const UserDetails = () => {
     });
 
     try {
-      const res = await api("/auth/updateProfile", {
+      const res = await api("/user/updateProfile", {
         method: "PUT",
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
@@ -348,7 +347,7 @@ const UserDetails = () => {
                 )}
             </Box>
             <HStack spacing={5}>
-              <FormSubmitButton label="Update Profile" />
+              <FormSubmitButton label="Update Profile" letterSpacing={0} />
               <Button
                 w="100%"
                 borderRadius="10px"

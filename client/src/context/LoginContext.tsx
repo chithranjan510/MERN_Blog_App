@@ -40,12 +40,13 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
       setEmail(null);
       setUserId(null);
       setUsername(null);
+      setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
 
-    api("/auth/profile", {
+    api("/user/profile", {
       method: "GET",
       credentials: "include",
     })

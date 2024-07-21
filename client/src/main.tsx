@@ -4,13 +4,16 @@ import "./index.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import LoginContextProvider from "./context/LoginContext.tsx";
+import FilterContextProvider from "./context/filterContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <ChakraProvider>
-      <BrowserRouter>
-        <LoginContextProvider>
+  <ChakraProvider>
+    <BrowserRouter>
+      <LoginContextProvider>
+        <FilterContextProvider>
           <App />
-        </LoginContextProvider>
-      </BrowserRouter>
-    </ChakraProvider>
+        </FilterContextProvider>
+      </LoginContextProvider>
+    </BrowserRouter>
+  </ChakraProvider>
 );

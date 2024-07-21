@@ -32,7 +32,7 @@ function App() {
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton color="#fff"/>
+          <DrawerCloseButton color="#fff" />
           <Sidebar />
         </DrawerContent>
       </Drawer>
@@ -100,6 +100,8 @@ function App() {
                 borderRadius: "10px",
               },
             }}
+            p={[7, null, 10]}
+            mt={["54px", null, 0]}
           >
             <Routes>
               <Route path="/" element={<Home />} />

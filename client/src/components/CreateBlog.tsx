@@ -9,7 +9,7 @@ import { FileEarmarkImage } from "@emotion-icons/bootstrap/FileEarmarkImage";
 import useApi from "../hooks/useApi";
 import { FormSubmitButton } from "./common/Button";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
-import { GetCategoryInterface } from "./Home";
+import { GetCategoryFilterInterface } from "./Home";
 import useCommonApi from "../hooks/useCommonApi";
 
 const CreateBlog = () => {
@@ -24,13 +24,13 @@ const CreateBlog = () => {
   const [isNewCategoryAdded, setIsNewCategoryAdded] = useState<boolean>(false);
   const customToast = useCustomToast();
   const [selectedCategory, setSelectedCategory] =
-    useState<GetCategoryInterface>({ _id: "", category: "" });
+    useState<GetCategoryFilterInterface>({ _id: "", category: "" });
   const [availableCategory, setAvailableCategory] = useState<
-    GetCategoryInterface[]
+    GetCategoryFilterInterface[]
   >([]);
 
   const blogCategoryOptions = availableCategory.filter(
-    (d: GetCategoryInterface) =>
+    (d: GetCategoryFilterInterface) =>
       d.category
         .toLocaleLowerCase()
         .includes(selectedCategory.category.toLocaleLowerCase())
@@ -126,11 +126,7 @@ const CreateBlog = () => {
   }, []);
 
   return (
-    <Box
-      py={[5, 10, 20]}
-      px={[5, 10, 20, "200px"]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Box>
       <Box p={[5, 10]} bgColor="#fff" borderRadius="12px">
         <form onSubmit={handleCreatePost}>
           <Box w="100%" position="relative" mb={5}>
@@ -205,7 +201,7 @@ const CreateBlog = () => {
           </Box>
           <Box
             w="100%"
-            aspectRatio="16/9"
+            h="120px"
             border="2px dashed #ccc"
             borderRadius="5px"
             mb={5}
@@ -257,7 +253,7 @@ const CreateBlog = () => {
             mb={5}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            minH="100px"
+            minH="120px"
           />
           <ReactQuill
             value={content}

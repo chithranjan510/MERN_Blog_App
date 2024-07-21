@@ -52,20 +52,14 @@ const Authors = () => {
   }
 
   return (
-    <Wrap
-      w="100%"
-      spacing={[7, 10]}
-      p={[7, 10, null, 20]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Wrap w="100%" spacing={[7, 10]} p={[3, 6, 10]}>
       {authors.map((author, index) => {
         return (
           <WrapItem
             key={index}
             bgColor="#fff"
             borderRadius="8px"
-            boxShadow="3px 3px 6px #aaa"
-            minW="250px"
+            minW="300px"
             w={["100%", "fit-content"]}
           >
             <HStack p={4} spacing={2}>
@@ -79,8 +73,12 @@ const Authors = () => {
                 borderRadius="8px"
               />
               <Box>
-                <Text fontWeight={700}>{author.username}</Text>
-                <Text fontSize="14px">{author.email}</Text>
+                <Text fontWeight={700} wordBreak="break-word">
+                  {author.username}
+                </Text>
+                <Text fontSize="14px" wordBreak="break-word">
+                  {author.email}
+                </Text>
               </Box>
             </HStack>
           </WrapItem>

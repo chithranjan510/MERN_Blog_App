@@ -28,7 +28,7 @@ const DeleteAlertModal = ({
         <ModalBody pt={10} pb={5}>
           <Text fontWeight={500}>{description}</Text>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter pb={5}>
           <Button size="sm" colorScheme="blue" mr={3} onClick={onClose}>
             Close
           </Button>

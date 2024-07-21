@@ -26,7 +26,7 @@ const Login = () => {
       password,
     };
 
-    const res = await api("/auth/login", {
+    const res = await api("/user/login", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
@@ -55,14 +55,11 @@ const Login = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <Box
-      px={[5, 10, null, 20]}
-      py={[10, null, 20]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Center w="100%" h="100%">
       <Box
+        w="100%"
+        maxW={["330px", "400px", null, "500px"]}
         p={[5, 10]}
-        maxW="500px"
         mx="auto"
         bgColor="#fff"
         borderRadius="14px"
@@ -125,7 +122,7 @@ const Login = () => {
           </VStack>
         </form>
       </Box>
-    </Box>
+    </Center>
   );
 };
 

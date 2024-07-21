@@ -121,16 +121,13 @@ const EditBlog = () => {
   }
 
   return (
-    <Box
-      py={[5, 10, 20]}
-      px={[5, 10, 20, "200px"]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Box>
       <Box p={[5, 10]} bgColor="#fff" borderRadius="12px">
         <form onSubmit={handleCreatePost}>
           <Box
             w="100%"
-            aspectRatio="16/9"
+            h={imageSrc === "" ? "120px" : "auto"}
+            aspectRatio={imageSrc === "" ? "auto" : "16/9"}
             border={imageSrc ? "none" : "2px dashed #ccc"}
             borderRadius="5px"
             mb={5}
@@ -170,6 +167,7 @@ const EditBlog = () => {
                   onClick={() => {
                     setImageSrc("");
                   }}
+                  cursor="pointer"
                 >
                   <Delete width="23px" color="#fff" />
                 </Center>

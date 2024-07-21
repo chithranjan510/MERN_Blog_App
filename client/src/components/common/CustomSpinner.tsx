@@ -7,13 +7,13 @@ const spinningKeyframes = keyframes`
 
 const CustomSpinner = () => {
   return (
-    <Center w="100%" h="50vh">
+    <Center w="100%" h="100%">
       <Box
         w="100px"
         h="100px"
         borderRadius="50%"
-        border="12px solid #eee"
-        borderTop="12px solid #1A202C"
+        border="12px solid #fff"
+        borderTop="12px solid #718096"
         animation={`${spinningKeyframes} 0.6s linear infinite`}
       />
     </Center>

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import {
   HStack,
@@ -8,6 +8,8 @@ import {
   Avatar,
   VStack,
   Spacer,
+  Center,
+  Input,
 } from "@chakra-ui/react";
 import { LoginContext } from "../context/LoginContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,9 +17,15 @@ import { REACT_APP_BACKEND_URL } from "../App";
 import { PlusCircle } from "@emotion-icons/bootstrap/PlusCircle";
 import SidebarSection from "./common/SidebarSection";
 import { LogOut } from "@emotion-icons/boxicons-regular/LogOut";
+import { LogIn } from "@emotion-icons/boxicons-regular/LogIn";
 import { PersonCircle } from "@emotion-icons/bootstrap/PersonCircle";
 import { PeopleFill } from "@emotion-icons/bootstrap/PeopleFill";
 import { BarGraph } from "@emotion-icons/entypo/BarGraph";
+import { GetCategoryFilterInterface, GetUserFilterInterface } from "./Home";
+import useApi from "../hooks/useApi";
+import { FilterContext } from "../context/filterContext";
+import { Clear } from "@emotion-icons/material-twotone/Clear";
+import { Profile } from "@emotion-icons/remix-line/Profile";
 
 const Sidebar = () => {
   const {
@@ -28,7 +36,32 @@ const Sidebar = () => {
     profileImagePath,
     isAdmin,
   } = useContext(LoginContext);
+
+  const { setLoading, setSelectedCategoryId, setSelectedUserId } =
+    useContext(FilterContext);
+
+  const [availableCategory, setAvailableCategory] = useState<
+    GetCategoryFilterInterface[]
+  >([]);
+  const [availableUsers, setAvailableUsers] = useState<
+    GetUserFilterInterface[]
+  >([]);
+  const [categoryFilterInput, setCategoryFilterInput] = useState<string>("");
+  const [userFilterInput, setUserFilterInput] = useState<string>("");
+
   const navigate = useNavigate();
+  const { api } = useApi();
+
+  const blogCategoryOptions = availableCategory.filter(
+    (d: GetCategoryFilterInterface) =>
+      d.category
+        .toLocaleLowerCase()
+        .includes(categoryFilterInput.toLocaleLowerCase())
+  );
+
+  const blogUserOptions = availableUsers.filter((d: GetUserFilterInterface) =>
+    d.username.toLocaleLowerCase().includes(userFilterInput.toLocaleLowerCase())
+  );
 
   const logoutHandler = () => {
     Cookies.remove("token");
@@ -36,12 +69,85 @@ const Sidebar = () => {
     navigate("/login");
   };
 
+  useEffect(() => {
+    const input = document.getElementById("homePageBlogCategoryInput");
+    const container = document.getElementById("homePageBlogCategoryContainer");
+
+    if (input && container) {
+      const handleFocus = () => {
+        container.style.display = "block";
+      };
+
+      const handleBlur = () => {
+        setTimeout(() => {
+          container.style.display = "none";
+        }, 300);
+      };
+
+      input.addEventListener("focus", handleFocus);
+
+      input.addEventListener("blur", handleBlur);
+
+      return () => {
+        input.removeEventListener("focus", handleFocus);
+        input.removeEventListener("blur", handleBlur);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    const input = document.getElementById("homePageBlogUserInput");
+    const container = document.getElementById("homePageBlogUserContainer");
+
+    if (input && container) {
+      const handleFocus = () => {
+        container.style.display = "block";
+      };
+
+      const handleBlur = () => {
+        setTimeout(() => {
+          container.style.display = "none";
+        }, 300);
+      };
+
+      input.addEventListener("focus", handleFocus);
+
+      input.addEventListener("blur", handleBlur);
+
+      return () => {
+        input.removeEventListener("focus", handleFocus);
+        input.removeEventListener("blur", handleBlur);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    api("/blogCategory", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => setAvailableCategory(data))
+      .catch((err) => console.log(err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    api("/authors", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => setAvailableUsers(data))
+      .catch((err) => console.log(err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <VStack
       alignItems="stretch"
       w="100%"
       h="100%"
       p={5}
+      pt={[10, null, 5]}
       borderRadius={["none", null, "8px"]}
       bgColor="gray.800"
       overflowY="auto"
@@ -62,8 +168,182 @@ const Sidebar = () => {
           </Text>
         </HStack>
       </Link>
+      <Box w="100%" h="50px" minH="50px" position="relative">
+        {categoryFilterInput !== "" && (
+          <Center
+            w="40px"
+            h="50px"
+            position="absolute"
+            right={0}
+            top={0}
+            zIndex={10}
+            borderRadius="5px"
+            cursor="pointer"
+            onClick={() => {
+              setSelectedCategoryId(null);
+              setCategoryFilterInput("");
+            }}
+          >
+            <Clear width="20px" color="#fff" />
+          </Center>
+        )}
+        <Input
+          id="homePageBlogCategoryInput"
+          w="100%"
+          h="100%"
+          pr="40px"
+          border="none"
+          bgColor="gray.600"
+          color="#fff"
+          placeholder="Filter by category"
+          value={categoryFilterInput}
+          autoComplete="off"
+          onChange={(e) => setCategoryFilterInput(e.target.value)}
+          _placeholder={{
+            color: "#fff",
+          }}
+        />
+        <Box
+          id="homePageBlogCategoryContainer"
+          display="none"
+          position="absolute"
+          w="100%"
+          maxH="250px"
+          overflowY="auto"
+          top="60px"
+          bgColor="#fff"
+          borderRadius="8px"
+          zIndex={10}
+          border="2px solid steelBlue"
+          css={{
+            "&::-webkit-scrollbar": {
+              width: "0",
+            },
+            "&::-webkit-scrollbar-track": {
+              width: "0",
+            },
+          }}
+        >
+          {blogCategoryOptions.length === 0 ? (
+            <Box p={3}>
+              <Text textAlign="center">No Data Found</Text>
+            </Box>
+          ) : (
+            blogCategoryOptions.map((category, index) => {
+              return (
+                <Text
+                  key={index}
+                  w="100%"
+                  h="40px"
+                  py="5px"
+                  px="20px"
+                  cursor="pointer"
+                  _hover={{ bgColor: "#eee" }}
+                  onClick={() => {
+                    setTimeout(() => {
+                      setSelectedCategoryId(category._id);
+                      setCategoryFilterInput(category.category);
+                      setLoading(true);
+                    }, 100);
+                  }}
+                  textTransform="capitalize"
+                >
+                  {category.category}
+                </Text>
+              );
+            })
+          )}
+        </Box>
+      </Box>
+      <Box w="100%" h="50px" minH="50px" position="relative">
+        {userFilterInput !== "" && (
+          <Center
+            w="40px"
+            h="50px"
+            position="absolute"
+            right={0}
+            top={0}
+            zIndex={10}
+            borderRadius="5px"
+            cursor="pointer"
+            onClick={() => {
+              setSelectedUserId(null);
+              setUserFilterInput("");
+            }}
+          >
+            <Clear width="20px" color="#fff" />
+          </Center>
+        )}
+        <Input
+          id="homePageBlogUserInput"
+          w="100%"
+          h="100%"
+          pr="40px"
+          border="none"
+          bgColor="gray.600"
+          color="#fff"
+          placeholder="Filter by author"
+          value={userFilterInput}
+          autoComplete="off"
+          onChange={(e) => setUserFilterInput(e.target.value)}
+          _placeholder={{
+            color: "#fff",
+          }}
+        />
+        <Box
+          id="homePageBlogUserContainer"
+          display="none"
+          position="absolute"
+          w="100%"
+          maxH="250px"
+          overflowY="auto"
+          top="60px"
+          bgColor="#fff"
+          borderRadius="8px"
+          zIndex={10}
+          border="2px solid steelBlue"
+          css={{
+            "&::-webkit-scrollbar": {
+              width: "0",
+            },
+            "&::-webkit-scrollbar-track": {
+              width: "0",
+            },
+          }}
+        >
+          {blogUserOptions.length === 0 ? (
+            <Box p={3}>
+              <Text textAlign="center">No Data Found</Text>
+            </Box>
+          ) : (
+            blogUserOptions.map((user, index) => {
+              return (
+                <Text
+                  key={index}
+                  w="100%"
+                  h="40px"
+                  py="5px"
+                  px="20px"
+                  cursor="pointer"
+                  _hover={{ bgColor: "#eee" }}
+                  onClick={() => {
+                    setTimeout(() => {
+                      setSelectedUserId(user._id);
+                      setUserFilterInput(user.username);
+                      setLoading(true);
+                    }, 100);
+                  }}
+                  textTransform="capitalize"
+                >
+                  {user.username}
+                </Text>
+              );
+            })
+          )}
+        </Box>
+      </Box>
       {isAdmin && (
-        <Link to="/create">
+        <Link to="/dashboard">
           <SidebarSection
             icon={<BarGraph width="25px" />}
             label="Dashboard"
@@ -123,17 +403,19 @@ const Sidebar = () => {
               p="5px"
             />
             <Box color="#fff">
-              <Text fontWeight={500} fontSize="15px">
+              <Text fontWeight={500} fontSize="15px" wordBreak="break-word">
                 {username}
               </Text>
-              <Text fontSize="12px">{email}</Text>
+              <Text fontSize="12px" wordBreak="break-word">
+                {email}
+              </Text>
             </Box>
           </HStack>
         )}
         {!isLoggedIn && (
           <Link to="/login">
             <SidebarSection
-              icon={<LogOut width="25px" />}
+              icon={<LogIn width="25px" />}
               label="Login"
               onClick={logoutHandler}
             />
@@ -142,7 +424,7 @@ const Sidebar = () => {
         {!isLoggedIn && (
           <Link to="/register">
             <SidebarSection
-              icon={<LogOut width="25px" />}
+              icon={<Profile width="25px" />}
               label="Register"
               onClick={logoutHandler}
             />

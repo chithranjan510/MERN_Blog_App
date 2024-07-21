@@ -32,7 +32,7 @@ const Register = () => {
       password,
     };
 
-    const response = await api("/auth/register", {
+    const response = await api("/user/register", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -61,14 +61,11 @@ const Register = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <Box
-      px={[5, 10, null, 20]}
-      py={[10, null, 20]}
-      mt={["62px", "72px", null, "74px"]}
-    >
+    <Center w="100%" h="100%">
       <Box
+        w="100%"
+        maxW={["330px", "400px", null, "500px"]}
         p={[5, 10]}
-        maxW="500px"
         mx="auto"
         bgColor="#fff"
         borderRadius="14px"
@@ -169,7 +166,7 @@ const Register = () => {
           </VStack>
         </form>
       </Box>
-    </Box>
+    </Center>
   );
 };
 

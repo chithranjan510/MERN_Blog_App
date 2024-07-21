@@ -108,8 +108,6 @@ export const getAllBlogs = async (req, res) => {
         ? { categoryId }
         : {};
 
-    console.log(userId, categoryId);
-
     const blogs = await BlogModel.find(payload)
       .populate("userId", "username profileImagePath")
       .populate("categoryId", "category _id")

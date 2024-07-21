@@ -1,23 +1,20 @@
 import {
   Avatar,
   Box,
-  Center,
   HStack,
   Image,
-  Input,
   SimpleGrid,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
-import { LoginContext } from "../context/LoginContext";
 import useApi from "../hooks/useApi";
 import { useNavigate } from "react-router-dom";
 import NoDataFound from "./common/NoDataFound";
 import CustomSpinner from "./common/CustomSpinner";
 import { getBlogDate } from "../utils/getDate";
 import { REACT_APP_BACKEND_URL } from "../App";
-import { Clear } from "@emotion-icons/material-twotone/Clear";
+import { FilterContext } from "../context/filterContext";
 
 export interface GetPostInterface {
   _id: string;
@@ -30,9 +27,14 @@ export interface GetPostInterface {
   createdAt: string;
 }
 
-export interface GetCategoryInterface {
+export interface GetCategoryFilterInterface {
   _id: string;
   category: string;
+}
+
+export interface GetUserFilterInterface {
+  _id: string;
+  username: string;
 }
 
 export interface PostFilterInterface {
@@ -41,215 +43,19 @@ export interface PostFilterInterface {
 }
 
 const Home = () => {
-  const { isLoggedIn } = useContext(LoginContext);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [postFilters, setPostFilters] = useState<PostFilterInterface>({
-    myPost: false,
-    categoryId: "",
-  });
-  const [selectedCategory, setSelectedCategory] =
-    useState<GetCategoryInterface>({ _id: "", category: "" });
-  const [availableCategory, setAvailableCategory] = useState<
-    GetCategoryInterface[]
-  >([]);
-  const { api } = useApi();
-
-  const blogCategoryOptions = availableCategory.filter(
-    (d: GetCategoryInterface) =>
-      d.category
-        .toLocaleLowerCase()
-        .includes(selectedCategory.category.toLocaleLowerCase())
-  );
-
-  useEffect(() => {
-    const input = document.getElementById("homePageBlogCategoryInput");
-    const container = document.getElementById("homePageBlogCategoryContainer");
-
-    if (input && container) {
-      input.addEventListener("focus", () => {
-        container.style.display = "block";
-      });
-
-      input.addEventListener("blur", () => {
-        setTimeout(() => {
-          container.style.display = "none";
-        }, 300);
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    api("/blogCategory", {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => setAvailableCategory(data))
-      .catch((err) => console.log(err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <Box>
-      <HStack
-        w="100%"
-        px={[5, 7, null, 10]}
-        pt={["70px", null, 10]}
-        pb={[4, null, 5]}
-        justifyContent={isLoggedIn ? "space-between" : "flex-end"}
-        spacing={3}
-        position="sticky"
-        top={0}
-        bgColor="gray.800"
-        zIndex={10}
-      >
-        {isLoggedIn && (
-          <Center
-            h="40px"
-            px={[2, 4]}
-            borderRadius="6px"
-            bgColor={postFilters.myPost ? "green.100" : "none"}
-            border="1px"
-            borderColor={postFilters.myPost ? "gray.600" : "#fff"}
-            color={postFilters.myPost ? "orange.700" : "#fff"}
-            cursor="pointer"
-            onClick={() => {
-              setPostFilters((prev) => ({ ...prev, myPost: !prev.myPost }));
-              setLoading(true);
-            }}
-            fontWeight={500}
-          >
-            <Text display={["block", "block"]} fontSize="14px">
-              My Post
-            </Text>
-          </Center>
-        )}
-        <Box w="250px" h="42px" position="relative">
-          {selectedCategory.category !== "" && (
-            <Center
-              w="42px"
-              h="42px"
-              position="absolute"
-              right={0}
-              top={0}
-              zIndex={10}
-              borderRadius="5px"
-              cursor="pointer"
-              onClick={() => {
-                setSelectedCategory({ _id: "", category: "" });
-                setPostFilters((prev) => ({
-                  ...prev,
-                  categoryId: "",
-                }));
-              }}
-            >
-              <Clear width="20px" color="#000" />
-            </Center>
-          )}
-          <Input
-            id="homePageBlogCategoryInput"
-            w="100%"
-            h="100%"
-            pr="42px"
-            border="none"
-            bgColor="gray.600"
-            placeholder="Filter by category"
-            value={selectedCategory.category}
-            autoComplete="off"
-            onChange={(e) =>
-              setSelectedCategory((prev) => ({
-                ...prev,
-                category: e.target.value,
-              }))
-            }
-            _placeholder={{
-              color: "#fff",
-            }}
-          />
-          <Box
-            id="homePageBlogCategoryContainer"
-            display="none"
-            position="absolute"
-            w="100%"
-            maxH="250px"
-            overflowY="auto"
-            top="50px"
-            bgColor="#fff"
-            borderRadius="8px"
-            zIndex={10}
-            border="2px solid steelBlue"
-            css={{
-              "&::-webkit-scrollbar": {
-                width: "0",
-              },
-              "&::-webkit-scrollbar-track": {
-                width: "0",
-              },
-            }}
-          >
-            {blogCategoryOptions.length === 0 ? (
-              <Box p={3}>
-                <Text textAlign="center">No Data Found</Text>
-              </Box>
-            ) : (
-              blogCategoryOptions.map((category, index) => {
-                return (
-                  <Text
-                    key={index}
-                    w="100%"
-                    h="40px"
-                    py="5px"
-                    px="20px"
-                    cursor="pointer"
-                    _hover={{ bgColor: "#eee" }}
-                    onClick={() => {
-                      setTimeout(() => {
-                        setSelectedCategory(category);
-                        setPostFilters((prev) => ({
-                          ...prev,
-                          categoryId: category._id,
-                        }));
-                      }, 100);
-                    }}
-                    textTransform="capitalize"
-                  >
-                    {category.category}
-                  </Text>
-                );
-              })
-            )}
-          </Box>
-        </Box>
-      </HStack>
-      <HomaPageContent
-        postFilters={postFilters}
-        loading={loading}
-        setLoading={setLoading}
-      />
-    </Box>
-  );
-};
-
-const HomaPageContent = ({
-  postFilters,
-  loading,
-  setLoading,
-}: {
-  postFilters: PostFilterInterface;
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
   const [blogs, setBlogs] = useState<GetPostInterface[]>([]);
   const navigate = useNavigate();
-  const { userId } = useContext(LoginContext);
+  const { selectedUserId, selectedCategoryId, setLoading, loading } =
+    useContext(FilterContext);
   const { api } = useApi();
 
   const url =
-    postFilters.myPost && postFilters.categoryId
-      ? `/blog/?userId=${userId}&categoryId=${postFilters.categoryId}`
-      : postFilters.myPost
-      ? `/blog/?userId=${userId}`
-      : postFilters.categoryId
-      ? `/blog/?categoryId=${postFilters.categoryId}`
+    selectedUserId && selectedCategoryId
+      ? `/blog/?userId=${selectedUserId}&categoryId=${selectedCategoryId}`
+      : selectedUserId
+      ? `/blog/?userId=${selectedUserId}`
+      : selectedCategoryId
+      ? `/blog/?categoryId=${selectedCategoryId}`
       : "/blog";
 
   useEffect(() => {
@@ -267,7 +73,7 @@ const HomaPageContent = ({
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(postFilters)]);
+  }, [selectedUserId, selectedCategoryId]);
 
   if (loading) {
     return <CustomSpinner />;
@@ -287,9 +93,6 @@ const HomaPageContent = ({
         "repeat(3, minmax(0, 1fr))",
       ]}
       gap={[5, 10]}
-      px={[7, null, 10]}
-      pb={[7, null, 10]}
-      pt={[3, null, 5]}
     >
       {blogs.map((post, index) => {
         return (

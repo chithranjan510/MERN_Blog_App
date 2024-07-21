@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   deleteProfileImage,
+  deleteUser,
   login,
   register,
   updateUserProfile,
@@ -14,6 +15,8 @@ const userRouter = Router();
 userRouter.post("/login", login);
 
 userRouter.post("/register", register);
+
+userRouter.post("/delete/:id", deleteUser);
 
 userRouter.get("/profile", authorizeMiddleware, userProfile);
 

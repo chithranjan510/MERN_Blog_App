@@ -8,6 +8,7 @@ import userRouter from "./routers/user.router.js";
 import blogRouter from "./routers/blog.router.js";
 import authorRouter from "./routers/author.router.js";
 import blogCategoryRouter from "./routers/blogCategory.router.js";
+import adminRouter from "./routers/admin.router.js";
 dotenv.config();
 const app = express();
 
@@ -23,13 +24,15 @@ app.use(
 );
 app.use("/uploads", express.static(path.join(import.meta.dirname, "uploads")));
 
-app.use("/api/auth", userRouter);
+app.use("/api/user", userRouter);
 
 app.use("/api/blog", blogRouter);
 
 app.use("/api/blogCategory", blogCategoryRouter);
 
 app.use("/api/authors", authorRouter);
+
+app.use("/api/admin", adminRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

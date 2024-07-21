@@ -4,7 +4,7 @@ import userModel from "../models/user.model.js";
 
 const authorRouter = Router();
 
-authorRouter.get("/", authorizeMiddleware, async (req, res) => {
+authorRouter.get("/", async (req, res) => {
   try {
     const data = await userModel
       .find({ isAdmin: false })
