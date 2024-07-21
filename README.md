@@ -1,0 +1,1 @@
+Blog application built using MERN Stack, JWT authorization, chakra UI library and typescript. 
