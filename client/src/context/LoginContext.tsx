@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import useApi from "../hooks/useApi";
+import CustomSpinner from "../components/common/CustomSpinner";
 
 export interface LoginContextInterface {
   username: string | null;
@@ -63,6 +64,7 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
         setIsAdmin(data.isAdmin);
         setProfileImagePath(data.profileImagePath);
         setIsLoading(false);
+        setIsLoggedIn(true);
       })
       .catch((err) => {
         setIsLoading(false);
@@ -73,7 +75,7 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   if (isLoading) {
-    return <></>;
+    return <CustomSpinner />;
   }
 
   return (

@@ -24,10 +24,7 @@ export const login = async (req, res) => {
       {},
       (err, token) => {
         if (err) throw err;
-        res
-          .status(200)
-          .cookie("token", token)
-          .json({ message: "logged in successfully" });
+        res.status(200).json({ token: token });
       }
     );
   } catch (error) {
