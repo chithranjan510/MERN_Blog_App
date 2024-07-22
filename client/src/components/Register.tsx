@@ -7,7 +7,6 @@ import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 import useApi from "../hooks/useApi";
-import { FilterContext } from "../context/filterContext";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
@@ -16,7 +15,6 @@ const Register = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const { isLoggedIn } = useContext(LoginContext);
-  const { setLoadingHomePage } = useContext(FilterContext);
   const navigate = useNavigate();
   const { api } = useApi();
 
@@ -58,7 +56,6 @@ const Register = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      setLoadingHomePage(true);
       navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

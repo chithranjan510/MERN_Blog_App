@@ -29,7 +29,6 @@ import { GetPostInterface } from "../Home";
 import { getBlogDate } from "../../utils/getDate";
 import DeleteAlertModal from "../common/DeleteAlertModal";
 import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
-import { FilterContext } from "../../context/filterContext";
 
 interface AdminAuthorDetailInterface {
   userId: string;
@@ -50,7 +49,6 @@ const UserDetails = ({
   setTotalUsers: React.Dispatch<React.SetStateAction<number | null>>;
 }) => {
   const { isLoggedIn, isAdmin, token } = useContext(LoginContext);
-  const { setLoadingHomePage } = useContext(FilterContext);
   const navigate = useNavigate();
   const customToast = useCustomToast();
   const [authors, setAuthors] = useState<AdminDashboardDetailInterface | null>(
@@ -65,7 +63,6 @@ const UserDetails = ({
   useEffect(() => {
     if (!isLoggedIn || !isAdmin) {
       customToast("You donot have admin access", CustomToastStatusEnum.error);
-      setLoadingHomePage(true);
       navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

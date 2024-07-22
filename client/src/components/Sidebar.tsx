@@ -114,7 +114,7 @@ const Sidebar = () => {
       overflowX="hidden"
       spacing={3}
     >
-      <Box w="fit-content" onClick={() => setLoadingHomePage(true)}>
+      <Box w="fit-content">
         <Link to="/">
           <HStack mb={5} display={["none", null, "flex"]}>
             <Box w="50px" h="50px" borderRadius="5px" overflow="hidden">

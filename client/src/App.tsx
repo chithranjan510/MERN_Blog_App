@@ -22,15 +22,13 @@ import Authors from "./components/Authors";
 import Profile from "./components/Profile";
 import Dashboard from "./components/dashboard/Dashboard";
 import { MenuUnfold } from "@emotion-icons/remix-fill/MenuUnfold";
-import { useContext } from "react";
-import { FilterContext } from "./context/filterContext";
 
 export const REACT_APP_BACKEND_URL =
   "https://mern-blog-app-backend-p9d3.onrender.com";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setLoadingHomePage } = useContext(FilterContext);
+
   return (
     <Box bgColor="gray.600">
       {isOpen && (
@@ -57,7 +55,7 @@ function App() {
         display={["flex", null, "none"]}
       >
         <Link to="/">
-          <HStack onClick={() => setLoadingHomePage(true)}>
+          <HStack>
             <Box w="30px" h="30px" borderRadius="5px" overflow="hidden">
               <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
             </Box>

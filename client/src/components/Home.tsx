@@ -52,6 +52,7 @@ const Home = () => {
   const [selectedBlog, setSelectedBlog] = useState<GetPostInterface | null>(
     null
   );
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const {
     selectedUserId,
@@ -90,10 +91,10 @@ const Home = () => {
       : "/blog";
 
   useEffect(() => {
-    if (!loadingHomepage) {
+    if (!loadingHomepage && !loading) {
       return;
     }
-    
+
     api(url, {
       method: "GET",
     })
@@ -101,15 +102,17 @@ const Home = () => {
       .then((data) => {
         setBlogs(data);
         setLoadingHomePage(false);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
         setLoadingHomePage(false);
+        setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUserId, selectedCategoryId, loadingHomepage]);
 
-  if (loadingHomepage) {
+  if (loadingHomepage || loading) {
     return <CustomSpinner />;
   }
 
