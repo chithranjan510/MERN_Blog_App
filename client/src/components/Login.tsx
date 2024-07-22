@@ -37,9 +37,7 @@ const Login = () => {
     const data: { message?: string; token: string } = await res.json();
 
     if (res.ok) {
-      Cookies.set("token", data.token, {
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      Cookies.set("token", data.token);
       customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);
       navigate("/");
