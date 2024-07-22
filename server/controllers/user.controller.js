@@ -27,6 +27,7 @@ export const login = async (req, res) => {
         res
           .status(200)
           .cookie("token", token, {
+            domain: "mern-blog-app-frontend-g6t6.onrender.com",
             maxAge: 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: true,
