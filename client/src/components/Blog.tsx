@@ -19,6 +19,7 @@ import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
 import DeleteAlertModal from "./common/DeleteAlertModal";
 import { LoginContext } from "../context/LoginContext";
 import { REACT_APP_BACKEND_URL } from "../App";
+import { FilterContext } from "../context/filterContext";
 
 const Blog = () => {
   const [blog, setBlog] = useState<GetPostInterface | null>(null);
@@ -28,6 +29,7 @@ const Blog = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const { userId, isAdmin, token } = useContext(LoginContext);
+  const { setLoadingHomePage } = useContext(FilterContext);
 
   const deletePost = () => {
     if (!blog) {
@@ -42,6 +44,7 @@ const Blog = () => {
     )
       .then(() => {
         onClose();
+        setLoadingHomePage(true);
         navigate("/");
       })
       .catch((err) => console.log(err));

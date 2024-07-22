@@ -11,9 +11,11 @@ import { FormSubmitButton } from "./common/Button";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 import { GetCategoryFilterInterface } from "./Home";
 import useCommonApi from "../hooks/useCommonApi";
+import { FilterContext } from "../context/filterContext";
 
 const CreateBlog = () => {
   const { isLoggedIn, userId, token } = useContext(LoginContext);
+  const { setLoadingHomePage } = useContext(FilterContext);
   const navigate = useNavigate();
   const { api } = useApi();
   const { addCategory } = useCommonApi();
@@ -64,6 +66,7 @@ const CreateBlog = () => {
 
     if (res.ok) {
       customToast("Blog created successfully", CustomToastStatusEnum.success);
+      setLoadingHomePage(true);
       navigate("/");
       return;
     }

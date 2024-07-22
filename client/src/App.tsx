@@ -30,7 +30,7 @@ export const REACT_APP_BACKEND_URL =
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setLoading } = useContext(FilterContext);
+  const { setLoadingHomePage } = useContext(FilterContext);
   return (
     <Box bgColor="gray.600">
       {isOpen && (
@@ -57,7 +57,7 @@ function App() {
         display={["flex", null, "none"]}
       >
         <Link to="/">
-          <HStack onClick={() => setLoading(true)}>
+          <HStack onClick={() => setLoadingHomePage(true)}>
             <Box w="30px" h="30px" borderRadius="5px" overflow="hidden">
               <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
             </Box>

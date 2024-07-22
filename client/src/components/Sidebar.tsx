@@ -45,7 +45,7 @@ const Sidebar = () => {
     isAdmin,
   } = useContext(LoginContext);
 
-  const { setLoading, setSelectedCategoryId, setSelectedUserId } =
+  const { setLoadingHomePage, setSelectedCategoryId, setSelectedUserId } =
     useContext(FilterContext);
 
   const [availableCategory, setAvailableCategory] = useState<
@@ -114,7 +114,7 @@ const Sidebar = () => {
       overflowX="hidden"
       spacing={3}
     >
-      <Box w="fit-content" onClick={() => setLoading(true)}>
+      <Box w="fit-content" onClick={() => setLoadingHomePage(true)}>
         <Link to="/">
           <HStack mb={5} display={["none", null, "flex"]}>
             <Box w="50px" h="50px" borderRadius="5px" overflow="hidden">
@@ -208,7 +208,7 @@ const Sidebar = () => {
                     setTimeout(() => {
                       setSelectedCategoryId(category._id);
                       setCategoryFilterInput(category.category);
-                      setLoading(true);
+                      setLoadingHomePage(true);
                     }, 100);
                   }}
                   textTransform="capitalize"
@@ -298,7 +298,7 @@ const Sidebar = () => {
                     setTimeout(() => {
                       setSelectedUserId(user._id);
                       setUserFilterInput(user.username);
-                      setLoading(true);
+                      setLoadingHomePage(true);
                     }, 100);
                   }}
                 >

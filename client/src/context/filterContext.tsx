@@ -1,8 +1,8 @@
 import { createContext, useState } from "react";
 
 interface FilterContextInterface {
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingHomepage: boolean;
+  setLoadingHomePage: React.Dispatch<React.SetStateAction<boolean>>;
   selectedUserId: string | null;
   setSelectedUserId: React.Dispatch<React.SetStateAction<string | null>>;
   selectedCategoryId: string | null;
@@ -10,8 +10,8 @@ interface FilterContextInterface {
 }
 
 export const FilterContext = createContext<FilterContextInterface>({
-  loading: false,
-  setLoading: () => {},
+  loadingHomepage: false,
+  setLoadingHomePage: () => {},
   selectedUserId: null,
   setSelectedUserId: () => {},
   selectedCategoryId: null,
@@ -19,7 +19,7 @@ export const FilterContext = createContext<FilterContextInterface>({
 });
 
 const FilterContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingHomepage, setLoadingHomePage] = useState<boolean>(true);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
@@ -28,8 +28,8 @@ const FilterContextProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <FilterContext.Provider
       value={{
-        loading,
-        setLoading,
+        loadingHomepage,
+        setLoadingHomePage,
         selectedUserId,
         setSelectedUserId,
         selectedCategoryId,

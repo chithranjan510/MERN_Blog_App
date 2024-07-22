@@ -53,8 +53,12 @@ const Home = () => {
     null
   );
   const navigate = useNavigate();
-  const { selectedUserId, selectedCategoryId, setLoading, loading } =
-    useContext(FilterContext);
+  const {
+    selectedUserId,
+    selectedCategoryId,
+    setLoadingHomePage,
+    loadingHomepage,
+  } = useContext(FilterContext);
   const { isAdmin, token } = useContext(LoginContext);
   const { api } = useApi();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -86,22 +90,26 @@ const Home = () => {
       : "/blog";
 
   useEffect(() => {
+    if (!loadingHomepage) {
+      return;
+    }
+    
     api(url, {
       method: "GET",
     })
       .then((res) => res.json())
       .then((data) => {
         setBlogs(data);
-        setLoading(false);
+        setLoadingHomePage(false);
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false);
+        setLoadingHomePage(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedUserId, selectedCategoryId]);
+  }, [selectedUserId, selectedCategoryId, loadingHomepage]);
 
-  if (loading) {
+  if (loadingHomepage) {
     return <CustomSpinner />;
   }
 

@@ -8,12 +8,14 @@ import { LoginContext } from "../context/LoginContext";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 import useApi from "../hooks/useApi";
 import Cookies from "js-cookie";
+import { FilterContext } from "../context/filterContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { setLoadingHomePage } = useContext(FilterContext);
 
   const customToast = useCustomToast();
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ const Login = () => {
       Cookies.set("token", data.token);
       customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);
+      setLoadingHomePage(true);
       navigate("/");
       return;
     }
@@ -51,8 +54,10 @@ const Login = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
+      setLoadingHomePage(true);
       navigate("/");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, navigate]);
 
   return (
