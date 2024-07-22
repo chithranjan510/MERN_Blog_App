@@ -98,7 +98,7 @@ export const userProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const newData = req.body;
-    const { token } = req.cookies;
+    const { token } = req.query;
 
     const { id } = jsonWebToken.verify(token, process.env.JWT_SECRET_KEY);
 
@@ -127,9 +127,7 @@ export const updateUserProfile = async (req, res) => {
 
     jsonWebToken.sign({ id }, process.env.JWT_SECRET_KEY, {}, (err, token) => {
       if (err) throw err;
-      res.status(200).cookie("token", token).json({
-        message: "Profile updated successfully",
-      });
+      res.status(200).json({ token, message: "Profile updated successfully" });
     });
   } catch (error) {
     console.log(error);

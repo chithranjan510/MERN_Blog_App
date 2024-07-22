@@ -1,5 +1,6 @@
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import { LoginContext } from "../context/LoginContext";
 import {
   Box,
@@ -199,7 +200,6 @@ const UserDetails = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const customToast = useCustomToast();
   const { api } = useApi();
-  const navigate = useNavigate();
 
   const updateProfile = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -237,19 +237,20 @@ const UserDetails = () => {
         headers: { "Content-Type": "application/json" },
       });
 
+      const data: { token: string; message?: string } = await res.json();
+
       if (res.ok) {
         customToast(
           "Profile updated Successfully",
           CustomToastStatusEnum.success
         );
         setIsEdit(false);
-        navigate("/profile");
+        Cookies.set("token", data.token);
+        window.location.reload();
       }
 
-      const data = await res.json();
-
       customToast(
-        data.message || "Something wen wrong please try again",
+        data.message || "Something went wrong please try again",
         CustomToastStatusEnum.error
       );
     } catch (error) {
