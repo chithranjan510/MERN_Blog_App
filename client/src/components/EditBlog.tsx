@@ -16,7 +16,7 @@ import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 import { REACT_APP_BACKEND_URL } from "../App";
 
 const EditBlog = () => {
-  const { isLoggedIn, userId, token } = useContext(LoginContext);
+  const { isLoggedIn, userId, token, isAdmin } = useContext(LoginContext);
   const navigate = useNavigate();
   const { api } = useApi();
   const [title, setTitle] = useState<string>("");
@@ -101,7 +101,7 @@ const EditBlog = () => {
       return;
     }
 
-    if (userId !== postUserId) {
+    if (userId !== postUserId && !isAdmin) {
       customToast(
         "You can only edit your own post",
         CustomToastStatusEnum.error
