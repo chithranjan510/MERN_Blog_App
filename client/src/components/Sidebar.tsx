@@ -25,7 +25,6 @@ import { GetCategoryFilterInterface, GetUserFilterInterface } from "./Home";
 import useApi from "../hooks/useApi";
 import { FilterContext } from "../context/filterContext";
 import { Clear } from "@emotion-icons/material-twotone/Clear";
-import { Profile } from "@emotion-icons/remix-line/Profile";
 
 const Sidebar = () => {
   const {
@@ -105,20 +104,22 @@ const Sidebar = () => {
       overflowX="hidden"
       spacing={3}
     >
-      <Link to="/">
-        <HStack mb={5} display={["none", null, "flex"]}>
-          <Box w="50px" h="50px" borderRadius="5px" overflow="hidden">
-            <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
-          </Box>
-          <Text
-            fontWeight={600}
-            fontSize={["18px", "22px", null, "26px"]}
-            color="#fff"
-          >
-            Blogify
-          </Text>
-        </HStack>
-      </Link>
+      <Box w="fit-content">
+        <Link to="/">
+          <HStack mb={5} display={["none", null, "flex"]}>
+            <Box w="50px" h="50px" borderRadius="5px" overflow="hidden">
+              <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
+            </Box>
+            <Text
+              fontWeight={600}
+              fontSize={["18px", "22px", null, "26px"]}
+              color="#fff"
+            >
+              Blogify
+            </Text>
+          </HStack>
+        </Link>
+      </Box>
       <Box w="100%" h="50px" minH="50px" position="relative">
         {categoryFilterInput !== "" && (
           <Center
@@ -381,7 +382,7 @@ const Sidebar = () => {
         {!isLoggedIn && (
           <Link to="/register">
             <SidebarSection
-              icon={<Profile width="25px" />}
+              icon={<PersonCircle width="25px" />}
               label="Register"
               onClick={logoutHandler}
             />

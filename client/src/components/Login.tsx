@@ -41,7 +41,7 @@ const Login = () => {
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "None",
       });
       customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Sidebar from "./components/Sidebar";
 import {
@@ -23,7 +23,8 @@ import Profile from "./components/Profile";
 import Dashboard from "./components/Dashboard";
 import { MenuUnfold } from "@emotion-icons/remix-fill/MenuUnfold";
 
-export const REACT_APP_BACKEND_URL = "https://mern-blog-app-backend-p9d3.onrender.com";
+export const REACT_APP_BACKEND_URL =
+  "https://mern-blog-app-backend-p9d3.onrender.com";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,14 +53,16 @@ function App() {
         zIndex={10}
         display={["flex", null, "none"]}
       >
-        <HStack>
-          <Box w="30px" h="30px" borderRadius="5px" overflow="hidden">
-            <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
-          </Box>
-          <Text fontWeight={600} fontSize="18px" color="#fff">
-            Blogify
-          </Text>
-        </HStack>
+        <Link to="/">
+          <HStack>
+            <Box w="30px" h="30px" borderRadius="5px" overflow="hidden">
+              <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
+            </Box>
+            <Text fontWeight={600} fontSize="18px" color="#fff">
+              Blogify
+            </Text>
+          </HStack>
+        </Link>
         <Box onClick={onOpen}>
           <MenuUnfold width="30px" color="#fff" />
         </Box>
