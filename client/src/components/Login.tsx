@@ -38,8 +38,8 @@ const Login = () => {
 
     if (res.ok) {
       Cookies.set("token", data.token, {
+        domain: ".onrender.com",
         maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
         secure: true,
         sameSite: "None",
       });
