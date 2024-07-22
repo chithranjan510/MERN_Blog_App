@@ -27,17 +27,19 @@ const Blog = () => {
   const { id } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
-  const { userId, isAdmin } = useContext(LoginContext);
+  const { userId, isAdmin, token } = useContext(LoginContext);
 
   const deletePost = () => {
     if (!blog) {
       return;
     }
 
-    api(`/blog/delete/${blog._id}/?coverImagePath=${blog.coverImagePath}`, {
-      method: "DELETE",
-      credentials: "include",
-    })
+    api(
+      `/blog/delete/${blog._id}/?coverImagePath=${blog.coverImagePath}&token=${token}`,
+      {
+        method: "DELETE",
+      }
+    )
       .then(() => {
         onClose();
         navigate("/");
@@ -48,7 +50,6 @@ const Blog = () => {
   useEffect(() => {
     api(`/blog/${id}`, {
       method: "GET",
-      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {

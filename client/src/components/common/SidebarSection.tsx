@@ -4,11 +4,13 @@ const SidebarSection = ({
   icon,
   label,
   onClick,
+  isActive,
   ...props
 }: {
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
+  isActive: boolean;
 } & StackProps) => {
   return (
     <HStack
@@ -18,6 +20,7 @@ const SidebarSection = ({
       color="#fff"
       onClick={onClick}
       cursor="pointer"
+      bgColor={isActive ? "gray.700" : "transparent"}
       {...props}
     >
       <Center w="50px" h="50px">

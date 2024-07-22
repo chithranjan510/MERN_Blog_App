@@ -74,7 +74,6 @@ export const deleteUser = async (req, res) => {
 
 export const userProfile = async (req, res) => {
   try {
-    // const { token } = req.cookies;
     const { token } = req.query;
     const data = jsonWebToken.verify(token, process.env.JWT_SECRET_KEY);
     const userData = await userModel.findById(data.id);

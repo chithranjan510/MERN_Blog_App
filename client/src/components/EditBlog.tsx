@@ -16,7 +16,7 @@ import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 import { REACT_APP_BACKEND_URL } from "../App";
 
 const EditBlog = () => {
-  const { isLoggedIn, userId } = useContext(LoginContext);
+  const { isLoggedIn, userId, token } = useContext(LoginContext);
   const navigate = useNavigate();
   const { api } = useApi();
   const [title, setTitle] = useState<string>("");
@@ -53,10 +53,9 @@ const EditBlog = () => {
     }
     formData.set("coverImagePath", oldImageSrc);
 
-    const res = await api(`/blog/edit/${id}`, {
+    const res = await api(`/blog/edit/${id}/?token=${token}`, {
       method: "PUT",
       body: formData,
-      credentials: "include",
     });
 
     if (res.ok) {
@@ -78,7 +77,7 @@ const EditBlog = () => {
       navigate("/login");
     }
 
-    api(`/blog/${id}`, { method: "GET", credentials: "include" })
+    api(`/blog/${id}`, { method: "GET" })
       .then((res) => res.json())
       .then((data: GetPostInterface) => {
         setImageSrc(data.coverImagePath);

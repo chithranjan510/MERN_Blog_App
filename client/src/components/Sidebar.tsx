@@ -26,6 +26,15 @@ import useApi from "../hooks/useApi";
 import { FilterContext } from "../context/filterContext";
 import { Clear } from "@emotion-icons/material-twotone/Clear";
 
+enum ActivePageEnum {
+  login = "login",
+  register = "register",
+  create = "create",
+  profile = "profile",
+  dashboard = "dashboard",
+  authors = "authors",
+}
+
 const Sidebar = () => {
   const {
     isLoggedIn,
@@ -50,6 +59,7 @@ const Sidebar = () => {
   const [showCategoryContainer, setShowCategoryContainer] =
     useState<boolean>(false);
   const [showUserContainer, setShowUserContainer] = useState<boolean>(false);
+  const activePage = window.location.pathname.replace("/", "");
 
   const navigate = useNavigate();
   const { api } = useApi();
@@ -104,7 +114,7 @@ const Sidebar = () => {
       overflowX="hidden"
       spacing={3}
     >
-      <Box w="fit-content">
+      <Box w="fit-content" onClick={() => setLoading(true)}>
         <Link to="/">
           <HStack mb={5} display={["none", null, "flex"]}>
             <Box w="50px" h="50px" borderRadius="5px" overflow="hidden">
@@ -258,7 +268,7 @@ const Sidebar = () => {
           top="60px"
           bgColor="#fff"
           borderRadius="8px"
-          zIndex={10}
+          zIndex={9}
           border="2px solid steelBlue"
           css={{
             "&::-webkit-scrollbar": {
@@ -291,7 +301,6 @@ const Sidebar = () => {
                       setLoading(true);
                     }, 100);
                   }}
-                  textTransform="capitalize"
                 >
                   {user.username}
                 </Text>
@@ -305,6 +314,7 @@ const Sidebar = () => {
           <SidebarSection
             icon={<BarGraph width="25px" />}
             label="Dashboard"
+            isActive={activePage === ActivePageEnum.dashboard}
             onClick={() => {}}
           />
         </Link>
@@ -314,6 +324,7 @@ const Sidebar = () => {
           <SidebarSection
             icon={<PlusCircle width="25px" />}
             label="Create new post"
+            isActive={activePage === ActivePageEnum.create}
             onClick={() => {}}
           />
         </Link>
@@ -323,6 +334,7 @@ const Sidebar = () => {
           <SidebarSection
             icon={<PersonCircle width="25px" />}
             label="My Profile"
+            isActive={activePage === ActivePageEnum.profile}
             onClick={() => {}}
           />
         </Link>
@@ -332,6 +344,7 @@ const Sidebar = () => {
           <SidebarSection
             icon={<PeopleFill width="25px" />}
             label="Authors"
+            isActive={activePage === ActivePageEnum.authors}
             onClick={() => {}}
           />
         </Link>
@@ -348,6 +361,7 @@ const Sidebar = () => {
           <SidebarSection
             icon={<LogOut width="25px" />}
             label="Logout"
+            isActive={false}
             onClick={logoutHandler}
           />
         )}
@@ -375,6 +389,7 @@ const Sidebar = () => {
             <SidebarSection
               icon={<LogIn width="25px" />}
               label="Login"
+              isActive={activePage === ActivePageEnum.login}
               onClick={logoutHandler}
             />
           </Link>
@@ -384,6 +399,7 @@ const Sidebar = () => {
             <SidebarSection
               icon={<PersonCircle width="25px" />}
               label="Register"
+              isActive={activePage === ActivePageEnum.register}
               onClick={logoutHandler}
             />
           </Link>

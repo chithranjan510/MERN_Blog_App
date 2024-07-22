@@ -55,7 +55,7 @@ const Home = () => {
   const navigate = useNavigate();
   const { selectedUserId, selectedCategoryId, setLoading, loading } =
     useContext(FilterContext);
-  const { isAdmin } = useContext(LoginContext);
+  const { isAdmin, token } = useContext(LoginContext);
   const { api } = useApi();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -65,10 +65,9 @@ const Home = () => {
     }
 
     api(
-      `/blog/delete/${selectedBlog._id}/?coverImagePath=${selectedBlog.coverImagePath}`,
+      `/blog/delete/${selectedBlog._id}/?coverImagePath=${selectedBlog.coverImagePath}&token=${token}`,
       {
         method: "DELETE",
-        credentials: "include",
       }
     )
       .then(() => {
@@ -87,10 +86,8 @@ const Home = () => {
       : "/blog";
 
   useEffect(() => {
-    setLoading(true);
     api(url, {
       method: "GET",
-      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {

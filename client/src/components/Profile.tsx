@@ -29,7 +29,7 @@ interface UpdateProfilePayload {
 }
 
 const Profile = () => {
-  const { userId, profileImagePath, isLoggedIn, setProfileImagePath } =
+  const { userId, profileImagePath, isLoggedIn, setProfileImagePath, token } =
     useContext(LoginContext);
   const navigate = useNavigate();
   const customToast = useCustomToast();
@@ -43,11 +43,13 @@ const Profile = () => {
     const formData = new FormData();
     formData.set("profileImage", file[0]);
 
-    const res: Response = await api(`/user/profileImage/${userId}`, {
-      method: "POST",
-      body: formData,
-      credentials: "include",
-    });
+    const res: Response = await api(
+      `/user/profileImage/${userId}/?token=${token}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     const data: { profileImagePath: string; message?: string } =
       await res.json();
@@ -69,10 +71,9 @@ const Profile = () => {
     }
 
     const res: Response = await api(
-      `/user/profileImage/${userId}/?profileImagePath=${profileImagePath}`,
+      `/user/profileImage/${userId}/?profileImagePath=${profileImagePath}&token=${token}`,
       {
         method: "DELETE",
-        credentials: "include",
       }
     );
 
@@ -145,7 +146,11 @@ const Profile = () => {
               >
                 <Box textAlign="center">
                   <Camera width="40px" color="#ddd" />
-                  <Text fontWeight={500} color="#888">
+                  <Text
+                    fontWeight={500}
+                    color="#888"
+                    fontSize={["12px", "14px", "16px"]}
+                  >
                     Profile Image
                   </Text>
                 </Box>
@@ -182,7 +187,11 @@ const Profile = () => {
 
 const UserDetails = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const { username: oldUsername, email: oldEmail } = useContext(LoginContext);
+  const {
+    username: oldUsername,
+    email: oldEmail,
+    token,
+  } = useContext(LoginContext);
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState<string>("");
@@ -222,11 +231,10 @@ const UserDetails = () => {
     });
 
     try {
-      const res = await api("/user/updateProfile", {
+      const res = await api(`/user/updateProfile/?token=${token}`, {
         method: "PUT",
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
       });
 
       if (res.ok) {

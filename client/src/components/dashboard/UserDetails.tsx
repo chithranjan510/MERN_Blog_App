@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { LoginContext } from "../context/LoginContext";
-import CustomSpinner from "./common/CustomSpinner";
+import { LoginContext } from "../../context/LoginContext";
+import CustomSpinner from "../common/CustomSpinner";
 import { useNavigate } from "react-router-dom";
-import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
+import useCustomToast, {
+  CustomToastStatusEnum,
+} from "../../hooks/useCustomToast";
 import {
   Avatar,
   Box,
@@ -19,13 +21,13 @@ import {
   chakra,
   useDisclosure,
 } from "@chakra-ui/react";
-import useApi from "../hooks/useApi";
-import { REACT_APP_BACKEND_URL } from "../App";
-import NoDataFound from "./common/NoDataFound";
+import useApi from "../../hooks/useApi";
+import { REACT_APP_BACKEND_URL } from "../../App";
+import NoDataFound from "../common/NoDataFound";
 import { ArrowBackOutline } from "@emotion-icons/evaicons-outline/ArrowBackOutline";
-import { GetPostInterface } from "./Home";
-import { getBlogDate } from "../utils/getDate";
-import DeleteAlertModal from "./common/DeleteAlertModal";
+import { GetPostInterface } from "../Home";
+import { getBlogDate } from "../../utils/getDate";
+import DeleteAlertModal from "../common/DeleteAlertModal";
 import { Delete } from "@emotion-icons/fluentui-system-regular/Delete";
 
 interface AdminAuthorDetailInterface {
@@ -41,14 +43,18 @@ interface AdminDashboardDetailInterface {
   users: AdminAuthorDetailInterface[];
 }
 
-const Dashboard = () => {
-  const { isLoggedIn, isAdmin } = useContext(LoginContext);
+const UserDetails = ({
+  setTotalUsers,
+}: {
+  setTotalUsers: React.Dispatch<React.SetStateAction<number | null>>;
+}) => {
+  const { isLoggedIn, isAdmin, token } = useContext(LoginContext);
   const navigate = useNavigate();
   const customToast = useCustomToast();
   const [authors, setAuthors] = useState<AdminDashboardDetailInterface | null>(
     null
   );
-  const [loading, setLoading] = useState<boolean>(true);
+  const [userDataLoading, setUserDataLoading] = useState<boolean>(true);
   const [selectedAuthorDetails, setSelectedAuthorDetails] =
     useState<AdminAuthorDetailInterface | null>(null);
 
@@ -63,23 +69,27 @@ const Dashboard = () => {
   }, [isLoggedIn, isAdmin]);
 
   useEffect(() => {
-    api("/admin/authors", {
+    if (!userDataLoading) {
+      return;
+    }
+
+    api(`/admin/authors/?token=${token}`, {
       method: "GET",
-      credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: AdminDashboardDetailInterface) => {
         setAuthors(data);
-        setLoading(false);
+        setTotalUsers(data.totalUsers);
+        setUserDataLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        setLoading(false);
+        setUserDataLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userDataLoading]);
 
-  if (loading) {
+  if (userDataLoading) {
     return <CustomSpinner />;
   }
 
@@ -93,23 +103,10 @@ const Dashboard = () => {
         <UserPosts
           selectedAuthorDetails={selectedAuthorDetails}
           setSelectedAuthorDetails={setSelectedAuthorDetails}
+          setUserDataLoading={setUserDataLoading}
         />
       ) : (
         <Box>
-          <HStack w="100%" justifyContent="flex-end" pb={[5, 7, 10]}>
-            <Text
-              px={3}
-              py={2}
-              bgColor="#fff"
-              borderRadius="6px"
-              w="fit-content"
-            >
-              Total Users:
-              <chakra.span pl={2} fontWeight={700}>
-                {authors.totalUsers}
-              </chakra.span>
-            </Text>
-          </HStack>
           <Wrap w="100%" spacing={[7, 10]}>
             {authors.users.map((author, index) => {
               return (
@@ -165,11 +162,13 @@ const Dashboard = () => {
 const UserPosts = ({
   selectedAuthorDetails,
   setSelectedAuthorDetails,
+  setUserDataLoading,
 }: {
   selectedAuthorDetails: AdminAuthorDetailInterface;
   setSelectedAuthorDetails: React.Dispatch<
     React.SetStateAction<AdminAuthorDetailInterface | null>
   >;
+  setUserDataLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { api } = useApi();
   const navigate = useNavigate();
@@ -182,18 +181,18 @@ const UserPosts = ({
   const [blogs, setBlogs] = useState<GetPostInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [blog, setBlog] = useState<GetPostInterface | null>(null);
+  const { token } = useContext(LoginContext);
 
   const userId = selectedAuthorDetails.userId;
 
   const deleteUser = () => {
-    api(`/user/delete/${userId}`, {
+    api(`/user/delete/${userId}/?token=${token}`, {
       method: "DELETE",
-      credentials: "include",
     })
       .then(() => {
         onClose();
         setSelectedAuthorDetails(null);
-        window.location.reload();
+        setUserDataLoading(true);
       })
       .catch((err) => console.log(err));
   };
@@ -203,20 +202,26 @@ const UserPosts = ({
       return;
     }
 
-    api(`/blog/delete/${blog._id}/?coverImagePath=${blog.coverImagePath}`, {
-      method: "DELETE",
-      credentials: "include",
-    })
+    api(
+      `/blog/delete/${blog._id}/?coverImagePath=${blog.coverImagePath}&token=${token}`,
+      {
+        method: "DELETE",
+      }
+    )
       .then(() => {
         onClose();
+        setLoading(true);
       })
       .catch((err) => console.log(err));
   };
 
   useEffect(() => {
+    if (!loading) {
+      return;
+    }
+
     api(`/blog/?userId=${userId}`, {
       method: "GET",
-      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
@@ -228,23 +233,19 @@ const UserPosts = ({
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, loading]);
 
   if (loading) {
     return <CustomSpinner />;
   }
 
-  if (blogs.length === 0) {
-    return <NoDataFound />;
-  }
-
   return (
-    <Box>
+    <Box w="100%" h="100%">
       <DeleteAlertModal
         isOpen={isOpen}
         onClose={onClose}
         onClick={deleteUser}
-        description="User will get deleted permanently, are you sure want to delete this user?"
+        description={`Are you sure want to delete this user?`}
       />
       <DeleteAlertModal
         isOpen={isPostDeleteOpen}
@@ -282,127 +283,133 @@ const UserPosts = ({
           Delete User
         </Button>
       </HStack>
-      <SimpleGrid
-        templateColumns={[
-          "minmax(0, 1fr)",
-          "repeat(2, minmax(0, 1fr))",
-          "minmax(0, 1fr)",
-          "repeat(2, minmax(0, 1fr))",
-          "repeat(3, minmax(0, 1fr))",
-        ]}
-        gap={[5, 10]}
-      >
-        {blogs.map((post, index) => {
-          return (
-            <VStack
-              key={index}
-              p={2}
-              alignItems="stretch"
-              borderRadius="16px"
-              overflow="hidden"
-              position="relative"
-              cursor="pointer"
-              spacing={0}
-              onClick={() => {
-                navigate(`/blog/${post._id}`);
-              }}
-              bgColor="#fff"
-              _hover={{
-                transform: "scale(1.02)",
-              }}
-              transition="all 0.2s ease"
-              maxW={["100%", null, null, "300px"]}
-              mx="auto"
-            >
-              <IconButton
-                aria-label="delete-post"
-                icon={<Delete width="25px" />}
-                borderRadius="50%"
-                position="absolute"
-                top={3}
-                right={3}
-                bgColor="red.500"
-                color="#fff"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setBlog(post);
-                  onPostDeleteOpen();
-                }}
-                _hover={{}}
-                _active={{}}
-              />
-              <Box overflow="hidden" maxH="200px" mb={3} borderRadius="10px">
-                <Image
-                  src={`${REACT_APP_BACKEND_URL}/${post.coverImagePath}`}
-                  alt="post"
-                  aspectRatio="16/9"
-                  objectFit="cover"
-                />
-              </Box>
-              <Box flex={1} mb={3}>
-                <Text
-                  fontWeight={700}
-                  fontSize={["18px", "20px", null, "22px"]}
-                  lineHeight={1.2}
-                  pb={1}
-                  noOfLines={2}
-                >
-                  {post.title}
-                </Text>
-                <Text fontSize={["12px", "13px", null, "14px"]} noOfLines={4}>
-                  {post.description}
-                </Text>
-              </Box>
-              <SimpleGrid
-                w="100%"
-                templateColumns="minmax(0, 1fr) 80px"
-                fontWeight={500}
-                spacing={5}
-                alignItems="center"
+      {blogs.length === 0 ? (
+        <Box w="100%" h="100%">
+          <NoDataFound />
+        </Box>
+      ) : (
+        <SimpleGrid
+          templateColumns={[
+            "minmax(0, 1fr)",
+            "repeat(2, minmax(0, 1fr))",
+            "minmax(0, 1fr)",
+            "repeat(2, minmax(0, 1fr))",
+            "repeat(3, minmax(0, 1fr))",
+          ]}
+          gap={[5, 10]}
+        >
+          {blogs.map((post, index) => {
+            return (
+              <VStack
+                key={index}
                 p={2}
+                alignItems="stretch"
+                borderRadius="16px"
+                overflow="hidden"
+                position="relative"
+                cursor="pointer"
+                spacing={0}
+                onClick={() => {
+                  navigate(`/blog/${post._id}`);
+                }}
+                bgColor="#fff"
+                _hover={{
+                  transform: "scale(1.02)",
+                }}
+                transition="all 0.2s ease"
+                maxW={["100%", null, null, "300px"]}
+                mx="auto"
               >
-                <HStack>
-                  <Avatar
-                    name={post.userId.username}
-                    src={
-                      post.userId.profileImagePath
-                        ? `${REACT_APP_BACKEND_URL}/${post.userId.profileImagePath}`
-                        : ""
-                    }
-                    size="xs"
+                <IconButton
+                  aria-label="delete-post"
+                  icon={<Delete width="25px" />}
+                  borderRadius="50%"
+                  position="absolute"
+                  top={3}
+                  right={3}
+                  bgColor="red.500"
+                  color="#fff"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setBlog(post);
+                    onPostDeleteOpen();
+                  }}
+                  _hover={{}}
+                  _active={{}}
+                />
+                <Box overflow="hidden" maxH="200px" mb={3} borderRadius="10px">
+                  <Image
+                    src={`${REACT_APP_BACKEND_URL}/${post.coverImagePath}`}
+                    alt="post"
+                    aspectRatio="16/9"
+                    objectFit="cover"
                   />
-                  <Text fontSize={["12px", "13px", null, "14px"]}>
-                    {post.userId.username}
+                </Box>
+                <Box flex={1} mb={3}>
+                  <Text
+                    fontWeight={700}
+                    fontSize={["18px", "20px", null, "22px"]}
+                    lineHeight={1.2}
+                    pb={1}
+                    noOfLines={2}
+                  >
+                    {post.title}
                   </Text>
-                </HStack>
-                <Text
-                  fontSize={["11px", "12px", null, "13px"]}
-                  fontWeight={700}
-                  opacity={0.5}
+                  <Text fontSize={["12px", "13px", null, "14px"]} noOfLines={4}>
+                    {post.description}
+                  </Text>
+                </Box>
+                <SimpleGrid
+                  w="100%"
+                  templateColumns="minmax(0, 1fr) 80px"
+                  fontWeight={500}
+                  spacing={5}
+                  alignItems="center"
+                  p={2}
                 >
-                  {getBlogDate(post.createdAt)}
+                  <HStack>
+                    <Avatar
+                      name={post.userId.username}
+                      src={
+                        post.userId.profileImagePath
+                          ? `${REACT_APP_BACKEND_URL}/${post.userId.profileImagePath}`
+                          : ""
+                      }
+                      size="xs"
+                    />
+                    <Text fontSize={["12px", "13px", null, "14px"]}>
+                      {post.userId.username}
+                    </Text>
+                  </HStack>
+                  <Text
+                    fontSize={["11px", "12px", null, "13px"]}
+                    fontWeight={700}
+                    opacity={0.5}
+                  >
+                    {getBlogDate(post.createdAt)}
+                  </Text>
+                </SimpleGrid>
+                <Text
+                  w="100%"
+                  textAlign="center"
+                  px={3}
+                  py={2}
+                  borderBottomRadius="10px"
+                  bgColor="gray.600"
+                  color="#fff"
+                  fontWeight={500}
+                  textTransform="capitalize"
+                  fontSize={["12px", "14px", null, "16px"]}
+                >
+                  {post.categoryId.category}
                 </Text>
-              </SimpleGrid>
-              <Text
-                w="100%"
-                textAlign="center"
-                px={3}
-                py={2}
-                borderBottomRadius="10px"
-                bgColor="gray.600"
-                color="#fff"
-                fontWeight={500}
-                textTransform="capitalize"
-                fontSize={["12px", "14px", null, "16px"]}
-              >
-                {post.categoryId.category}
-              </Text>
-            </VStack>
-          );
-        })}
-      </SimpleGrid>
+              </VStack>
+            );
+          })}
+        </SimpleGrid>
+      )}
     </Box>
   );
 };
 
-export default Dashboard;
+export default UserDetails;

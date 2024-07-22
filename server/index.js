@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./routers/user.router.js";
@@ -15,10 +14,9 @@ const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://mern-blog-app-frontend-g6t6.onrender.com"],
+    origin: ["http://localhost:5173"],
     credentials: true,
   })
 );

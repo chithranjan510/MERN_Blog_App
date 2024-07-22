@@ -20,14 +20,16 @@ import Login from "./components/Login";
 import Blog from "./components/Blog";
 import Authors from "./components/Authors";
 import Profile from "./components/Profile";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/dashboard/Dashboard";
 import { MenuUnfold } from "@emotion-icons/remix-fill/MenuUnfold";
+import { useContext } from "react";
+import { FilterContext } from "./context/filterContext";
 
-export const REACT_APP_BACKEND_URL =
-  "https://mern-blog-app-backend-p9d3.onrender.com";
+export const REACT_APP_BACKEND_URL = "http://localhost:5000";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { setLoading } = useContext(FilterContext);
   return (
     <Box bgColor="gray.600">
       {isOpen && (
@@ -54,7 +56,7 @@ function App() {
         display={["flex", null, "none"]}
       >
         <Link to="/">
-          <HStack>
+          <HStack onClick={() => setLoading(true)}>
             <Box w="30px" h="30px" borderRadius="5px" overflow="hidden">
               <Image src="/favicon.png" alt="web-logo" w="100%" h="100%" />
             </Box>
@@ -93,20 +95,9 @@ function App() {
             borderRadius={["none", null, "8px"]}
             bgColor="gray.800"
             h="100%"
-            overflowY="auto"
-            overflowX="hidden"
-            css={{
-              "&::-webkit-scrollbar": {
-                width: "5px",
-                borderRadius: "10px",
-              },
-              "&::-webkit-scrollbar-track": {
-                width: "5px",
-                borderRadius: "10px",
-              },
-            }}
             p={[7, null, 10]}
-            mt={["54px", null, 0]}
+            pt={["60px", null, 10]}
+            overflowY="auto"
           >
             <Routes>
               <Route path="/" element={<Home />} />

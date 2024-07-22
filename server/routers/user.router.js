@@ -16,7 +16,7 @@ userRouter.post("/login", login);
 
 userRouter.post("/register", register);
 
-userRouter.post("/delete/:id", deleteUser);
+userRouter.delete("/delete/:id", deleteUser);
 
 userRouter.get("/profile", authorizeMiddleware, userProfile);
 

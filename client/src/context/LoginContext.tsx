@@ -63,7 +63,6 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
 
     api(`/user/profile/?token=${token}`, {
       method: "GET",
-      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {

@@ -13,7 +13,7 @@ import { GetCategoryFilterInterface } from "./Home";
 import useCommonApi from "../hooks/useCommonApi";
 
 const CreateBlog = () => {
-  const { isLoggedIn, userId } = useContext(LoginContext);
+  const { isLoggedIn, userId, token } = useContext(LoginContext);
   const navigate = useNavigate();
   const { api } = useApi();
   const { addCategory } = useCommonApi();
@@ -57,10 +57,9 @@ const CreateBlog = () => {
     formData.set("categoryId", selectedCategory._id);
     formData.set("blogImage", image[0]);
 
-    const res = await api("/blog/create", {
+    const res = await api(`/blog/create/?token=${token}`, {
       method: "POST",
       body: formData,
-      credentials: "include",
     });
 
     if (res.ok) {
