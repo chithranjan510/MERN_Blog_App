@@ -2,6 +2,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import useApi from "../hooks/useApi";
 import CustomSpinner from "../components/common/CustomSpinner";
+import { Box } from "@chakra-ui/react";
 
 export interface LoginContextInterface {
   username: string | null;
@@ -26,8 +27,9 @@ export const LoginContext = createContext<LoginContextInterface>({
 });
 
 const LoginContextProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null | undefined>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(token));
+  const cookieToken = Cookies.get("token");
+  const [token, setToken] = useState<string | undefined>(cookieToken);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [username, setUsername] = useState<string | null>(null);
@@ -37,8 +39,10 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
   const { api } = useApi();
 
   useEffect(() => {
-    if (token === null) {
-      setToken(Cookies.get("token"));
+    const newToken = Cookies.get("token");
+
+    if (newToken !== token) {
+      setToken(newToken);
       return;
     }
 
@@ -47,6 +51,9 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
       setUserId(null);
       setUsername(null);
       setIsLoading(false);
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+      setProfileImagePath(null);
       return;
     }
 
@@ -72,10 +79,14 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
       });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [cookieToken, token]);
 
   if (isLoading) {
-    return <CustomSpinner />;
+    return (
+      <Box w="100%" h="100vh">
+        <CustomSpinner />
+      </Box>
+    );
   }
 
   return (
