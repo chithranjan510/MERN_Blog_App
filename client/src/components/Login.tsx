@@ -40,8 +40,6 @@ const Login = () => {
       Cookies.set("token", data.token, {
         domain: ".onrender.com",
         maxAge: 24 * 60 * 60 * 1000,
-        secure: true,
-        sameSite: "None",
       });
       customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);
