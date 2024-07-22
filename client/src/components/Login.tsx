@@ -7,7 +7,6 @@ import { FormSubmitButton } from "./common/Button";
 import { LoginContext } from "../context/LoginContext";
 import useCustomToast, { CustomToastStatusEnum } from "../hooks/useCustomToast";
 import useApi from "../hooks/useApi";
-import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -37,12 +36,6 @@ const Login = () => {
     const data: { message?: string; token: string } = await res.json();
 
     if (res.ok) {
-      Cookies.set("token", data.token, {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-      });
       customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);
       navigate("/");
