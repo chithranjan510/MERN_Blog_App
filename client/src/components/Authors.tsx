@@ -25,7 +25,6 @@ const Authors = () => {
   useEffect(() => {
     api("/authors", {
       method: "GET",
-      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {

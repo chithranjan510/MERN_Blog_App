@@ -5,6 +5,7 @@ import CustomSpinner from "../components/common/CustomSpinner";
 import { Box } from "@chakra-ui/react";
 
 export interface LoginContextInterface {
+  token: string | undefined;
   username: string | null;
   email: string | null;
   userId: string | null;
@@ -16,6 +17,7 @@ export interface LoginContextInterface {
 }
 
 export const LoginContext = createContext<LoginContextInterface>({
+  token: undefined,
   username: null,
   email: null,
   userId: null,
@@ -59,7 +61,7 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
 
-    api("/user/profile", {
+    api(`/user/profile/?token=${token}`, {
       method: "GET",
       credentials: "include",
     })
@@ -92,6 +94,7 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
   return (
     <LoginContext.Provider
       value={{
+        token,
         username,
         email,
         profileImagePath,

@@ -2,7 +2,8 @@ import jsonWebToken from "jsonwebtoken";
 import multer from "multer";
 
 export const authorizeMiddleware = (req, res, next) => {
-  const { token } = req.cookies;
+  // const { token } = req.cookies;
+  const { token } = req.query;
 
   if (!token) {
     return res.status(403).json({ message: "Access denied" });
