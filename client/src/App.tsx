@@ -25,7 +25,8 @@ import { MenuUnfold } from "@emotion-icons/remix-fill/MenuUnfold";
 import { useContext } from "react";
 import { FilterContext } from "./context/filterContext";
 
-export const REACT_APP_BACKEND_URL = "https://mern-blog-app-backend-p9d3.onrender.com";
+export const REACT_APP_BACKEND_URL =
+  "https://mern-blog-app-backend-p9d3.onrender.com";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -109,7 +110,6 @@ function App() {
               <Route path="/authors" element={<Authors />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/*" element={<Home />} />
             </Routes>
           </Box>
         </Box>
