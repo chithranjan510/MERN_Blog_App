@@ -13,6 +13,8 @@ export const FormSubmitButton = ({
       borderRadius="10px"
       h="50px"
       fontSize="18px"
+      _hover={{}}
+      _active={{}}
       letterSpacing={2}
       {...props}
     >

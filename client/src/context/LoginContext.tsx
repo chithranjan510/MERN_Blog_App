@@ -25,7 +25,7 @@ export const LoginContext = createContext<LoginContextInterface>({
 });
 
 const LoginContextProvider = ({ children }: { children: ReactNode }) => {
-  const token = Cookies.get("token");
+  const [token, setToken] = useState<string | null | undefined>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(token));
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -36,6 +36,11 @@ const LoginContextProvider = ({ children }: { children: ReactNode }) => {
   const { api } = useApi();
 
   useEffect(() => {
+    if (token === null) {
+      setToken(Cookies.get("token"));
+      return;
+    }
+
     if (!token) {
       setEmail(null);
       setUserId(null);

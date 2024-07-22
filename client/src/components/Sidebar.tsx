@@ -135,7 +135,7 @@ const Sidebar = () => {
               setCategoryFilterInput("");
             }}
           >
-            <Clear width="20px" color="#fff" />
+            <Clear width="20px" />
           </Center>
         )}
         <Input
@@ -143,15 +143,11 @@ const Sidebar = () => {
           h="100%"
           pr="40px"
           border="none"
-          bgColor="gray.600"
-          color="#fff"
+          bgColor="#fff"
           placeholder="Filter by category"
           value={categoryFilterInput}
           autoComplete="off"
           onChange={(e) => setCategoryFilterInput(e.target.value)}
-          _placeholder={{
-            color: "#fff",
-          }}
           onFocus={() => {
             setShowCategoryContainer(true);
           }}
@@ -229,7 +225,7 @@ const Sidebar = () => {
               setUserFilterInput("");
             }}
           >
-            <Clear width="20px" color="#fff" />
+            <Clear width="20px" />
           </Center>
         )}
         <Input
@@ -237,15 +233,11 @@ const Sidebar = () => {
           h="100%"
           pr="40px"
           border="none"
-          bgColor="gray.600"
-          color="#fff"
+          bgColor="#fff"
           placeholder="Filter by author"
           value={userFilterInput}
           autoComplete="off"
           onChange={(e) => setUserFilterInput(e.target.value)}
-          _placeholder={{
-            color: "#fff",
-          }}
           onFocus={() => {
             setShowUserContainer(true);
           }}
