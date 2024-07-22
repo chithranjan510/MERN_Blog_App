@@ -38,10 +38,10 @@ const Login = () => {
 
     if (res.ok) {
       Cookies.set("token", data.token, {
-        // maxAge: 24 * 60 * 60 * 1000,
-        // httpOnly: true,
-        // secure: true,
-        // sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
       });
       customToast("Logged in Successfully", CustomToastStatusEnum.success);
       setIsLoggedIn(true);
