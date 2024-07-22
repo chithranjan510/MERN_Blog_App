@@ -142,8 +142,13 @@ const Sidebar = () => {
             borderRadius="5px"
             cursor="pointer"
             onClick={() => {
-              setSelectedCategoryId(null);
-              setCategoryFilterInput("");
+              setTimeout(() => {
+                setSelectedCategoryId(null);
+                setCategoryFilterInput("");
+                if (blogCategoryOptions.length !== 0) {
+                  setLoadingHomePage(true);
+                }
+              }, 100);
             }}
           >
             <Clear width="20px" />
@@ -232,8 +237,13 @@ const Sidebar = () => {
             borderRadius="5px"
             cursor="pointer"
             onClick={() => {
-              setSelectedUserId(null);
-              setUserFilterInput("");
+              setTimeout(() => {
+                setSelectedUserId(null);
+                setUserFilterInput("");
+                if (blogUserOptions.length !== 0) {
+                  setLoadingHomePage(true);
+                }
+              }, 100);
             }}
           >
             <Clear width="20px" />
