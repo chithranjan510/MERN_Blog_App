@@ -244,7 +244,6 @@ const UserDetails = () => {
           "Profile updated Successfully",
           CustomToastStatusEnum.success
         );
-        setIsEdit(false);
         Cookies.set("token", data.token);
         window.location.reload();
       }
