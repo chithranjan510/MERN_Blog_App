@@ -1,4 +1,13 @@
-import { Box, Center, Image, Input, Text, Textarea } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  HStack,
+  Image,
+  Input,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../context/LoginContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -214,7 +223,24 @@ const EditBlog = () => {
             onChange={(data) => setContent(data)}
             style={{ height: "400px" }}
           />
-          <FormSubmitButton type="submit" mt={20} label="Edit Post" />
+          <HStack w="100%" mt={20}>
+            <FormSubmitButton type="submit" label="Edit Post" />
+            <Button
+              w="100%"
+              borderRadius="10px"
+              h="50px"
+              fontSize="18px"
+              letterSpacing={2}
+              bgColor="#fff"
+              border="2px solid #c53030"
+              color="red.600"
+              onClick={() => navigate(`/blog/${id}`)}
+              _hover={{}}
+              _active={{}}
+            >
+              Cancel
+            </Button>
+          </HStack>
         </form>
       </Box>
     </Box>
