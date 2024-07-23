@@ -143,7 +143,6 @@ const Blog = () => {
       />
       <Box
         mt={[5, 10]}
-        fontSize={["14px", "16px", null, "18px"]}
         dangerouslySetInnerHTML={{
           __html: blog.content,
         }}
