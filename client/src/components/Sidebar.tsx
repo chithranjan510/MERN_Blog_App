@@ -130,195 +130,199 @@ const Sidebar = () => {
           </HStack>
         </Link>
       </Box>
-      <Box w="100%" h="50px" minH="50px" position="relative">
-        {categoryFilterInput !== "" && (
-          <Center
-            w="40px"
-            h="50px"
-            position="absolute"
-            right={0}
-            top={0}
-            zIndex={10}
-            borderRadius="5px"
-            cursor="pointer"
-            onClick={() => {
+      {activePage === "" && (
+        <Box w="100%" h="50px" minH="50px" position="relative">
+          {categoryFilterInput !== "" && (
+            <Center
+              w="40px"
+              h="50px"
+              position="absolute"
+              right={0}
+              top={0}
+              zIndex={10}
+              borderRadius="5px"
+              cursor="pointer"
+              onClick={() => {
+                setTimeout(() => {
+                  setSelectedCategoryId(null);
+                  setCategoryFilterInput("");
+                  if (blogCategoryOptions.length !== 0) {
+                    setLoadingHomePage(true);
+                  }
+                }, 100);
+              }}
+            >
+              <Clear width="20px" />
+            </Center>
+          )}
+          <Input
+            w="100%"
+            h="100%"
+            pr="40px"
+            border="none"
+            bgColor="#fff"
+            placeholder="Filter by category"
+            value={categoryFilterInput}
+            autoComplete="off"
+            onChange={(e) => setCategoryFilterInput(e.target.value)}
+            onFocus={() => {
+              setShowCategoryContainer(true);
+            }}
+            onBlur={() => {
               setTimeout(() => {
-                setSelectedCategoryId(null);
-                setCategoryFilterInput("");
-                if (blogCategoryOptions.length !== 0) {
-                  setLoadingHomePage(true);
-                }
-              }, 100);
+                setShowCategoryContainer(false);
+              }, 300);
+            }}
+          />
+          <Box
+            id="homePageBlogCategoryContainer"
+            display={showCategoryContainer ? "block" : "none"}
+            position="absolute"
+            w="100%"
+            maxH="250px"
+            overflowY="auto"
+            top="60px"
+            bgColor="#fff"
+            borderRadius="8px"
+            zIndex={10}
+            border="2px solid steelBlue"
+            css={{
+              "&::-webkit-scrollbar": {
+                width: "0",
+              },
+              "&::-webkit-scrollbar-track": {
+                width: "0",
+              },
             }}
           >
-            <Clear width="20px" />
-          </Center>
-        )}
-        <Input
-          w="100%"
-          h="100%"
-          pr="40px"
-          border="none"
-          bgColor="#fff"
-          placeholder="Filter by category"
-          value={categoryFilterInput}
-          autoComplete="off"
-          onChange={(e) => setCategoryFilterInput(e.target.value)}
-          onFocus={() => {
-            setShowCategoryContainer(true);
-          }}
-          onBlur={() => {
-            setTimeout(() => {
-              setShowCategoryContainer(false);
-            }, 300);
-          }}
-        />
-        <Box
-          id="homePageBlogCategoryContainer"
-          display={showCategoryContainer ? "block" : "none"}
-          position="absolute"
-          w="100%"
-          maxH="250px"
-          overflowY="auto"
-          top="60px"
-          bgColor="#fff"
-          borderRadius="8px"
-          zIndex={10}
-          border="2px solid steelBlue"
-          css={{
-            "&::-webkit-scrollbar": {
-              width: "0",
-            },
-            "&::-webkit-scrollbar-track": {
-              width: "0",
-            },
-          }}
-        >
-          {blogCategoryOptions.length === 0 ? (
-            <Box p={3}>
-              <Text textAlign="center">No Data Found</Text>
-            </Box>
-          ) : (
-            blogCategoryOptions.map((category, index) => {
-              return (
-                <Text
-                  key={index}
-                  w="100%"
-                  h="40px"
-                  py="5px"
-                  px="20px"
-                  cursor="pointer"
-                  _hover={{ bgColor: "#eee" }}
-                  onClick={() => {
-                    setTimeout(() => {
-                      setSelectedCategoryId(category._id);
-                      setCategoryFilterInput(category.category);
-                      setLoadingHomePage(true);
-                    }, 100);
-                  }}
-                  textTransform="capitalize"
-                >
-                  {category.category}
-                </Text>
-              );
-            })
-          )}
+            {blogCategoryOptions.length === 0 ? (
+              <Box p={3}>
+                <Text textAlign="center">No Data Found</Text>
+              </Box>
+            ) : (
+              blogCategoryOptions.map((category, index) => {
+                return (
+                  <Text
+                    key={index}
+                    w="100%"
+                    h="40px"
+                    py="5px"
+                    px="20px"
+                    cursor="pointer"
+                    _hover={{ bgColor: "#eee" }}
+                    onClick={() => {
+                      setTimeout(() => {
+                        setSelectedCategoryId(category._id);
+                        setCategoryFilterInput(category.category);
+                        setLoadingHomePage(true);
+                      }, 100);
+                    }}
+                    textTransform="capitalize"
+                  >
+                    {category.category}
+                  </Text>
+                );
+              })
+            )}
+          </Box>
         </Box>
-      </Box>
-      <Box w="100%" h="50px" minH="50px" position="relative">
-        {userFilterInput !== "" && (
-          <Center
-            w="40px"
-            h="50px"
-            position="absolute"
-            right={0}
-            top={0}
-            zIndex={10}
-            borderRadius="5px"
-            cursor="pointer"
-            onClick={() => {
+      )}
+      {activePage === "" && (
+        <Box w="100%" h="50px" minH="50px" position="relative">
+          {userFilterInput !== "" && (
+            <Center
+              w="40px"
+              h="50px"
+              position="absolute"
+              right={0}
+              top={0}
+              zIndex={10}
+              borderRadius="5px"
+              cursor="pointer"
+              onClick={() => {
+                setTimeout(() => {
+                  setSelectedUserId(null);
+                  setUserFilterInput("");
+                  if (blogUserOptions.length !== 0) {
+                    setLoadingHomePage(true);
+                  }
+                }, 100);
+              }}
+            >
+              <Clear width="20px" />
+            </Center>
+          )}
+          <Input
+            w="100%"
+            h="100%"
+            pr="40px"
+            border="none"
+            bgColor="#fff"
+            placeholder="Filter by author"
+            value={userFilterInput}
+            autoComplete="off"
+            onChange={(e) => setUserFilterInput(e.target.value)}
+            onFocus={() => {
+              setShowUserContainer(true);
+            }}
+            onBlur={() => {
               setTimeout(() => {
-                setSelectedUserId(null);
-                setUserFilterInput("");
-                if (blogUserOptions.length !== 0) {
-                  setLoadingHomePage(true);
-                }
-              }, 100);
+                setShowUserContainer(false);
+              }, 300);
+            }}
+          />
+          <Box
+            id="homePageBlogUserContainer"
+            display={showUserContainer ? "block" : "none"}
+            position="absolute"
+            w="100%"
+            maxH="250px"
+            overflowY="auto"
+            top="60px"
+            bgColor="#fff"
+            borderRadius="8px"
+            zIndex={9}
+            border="2px solid steelBlue"
+            css={{
+              "&::-webkit-scrollbar": {
+                width: "0",
+              },
+              "&::-webkit-scrollbar-track": {
+                width: "0",
+              },
             }}
           >
-            <Clear width="20px" />
-          </Center>
-        )}
-        <Input
-          w="100%"
-          h="100%"
-          pr="40px"
-          border="none"
-          bgColor="#fff"
-          placeholder="Filter by author"
-          value={userFilterInput}
-          autoComplete="off"
-          onChange={(e) => setUserFilterInput(e.target.value)}
-          onFocus={() => {
-            setShowUserContainer(true);
-          }}
-          onBlur={() => {
-            setTimeout(() => {
-              setShowUserContainer(false);
-            }, 300);
-          }}
-        />
-        <Box
-          id="homePageBlogUserContainer"
-          display={showUserContainer ? "block" : "none"}
-          position="absolute"
-          w="100%"
-          maxH="250px"
-          overflowY="auto"
-          top="60px"
-          bgColor="#fff"
-          borderRadius="8px"
-          zIndex={9}
-          border="2px solid steelBlue"
-          css={{
-            "&::-webkit-scrollbar": {
-              width: "0",
-            },
-            "&::-webkit-scrollbar-track": {
-              width: "0",
-            },
-          }}
-        >
-          {blogUserOptions.length === 0 ? (
-            <Box p={3}>
-              <Text textAlign="center">No Data Found</Text>
-            </Box>
-          ) : (
-            blogUserOptions.map((user, index) => {
-              return (
-                <Text
-                  key={index}
-                  w="100%"
-                  h="40px"
-                  py="5px"
-                  px="20px"
-                  cursor="pointer"
-                  _hover={{ bgColor: "#eee" }}
-                  onClick={() => {
-                    setTimeout(() => {
-                      setSelectedUserId(user._id);
-                      setUserFilterInput(user.username);
-                      setLoadingHomePage(true);
-                    }, 100);
-                  }}
-                >
-                  {user.username}
-                </Text>
-              );
-            })
-          )}
+            {blogUserOptions.length === 0 ? (
+              <Box p={3}>
+                <Text textAlign="center">No Data Found</Text>
+              </Box>
+            ) : (
+              blogUserOptions.map((user, index) => {
+                return (
+                  <Text
+                    key={index}
+                    w="100%"
+                    h="40px"
+                    py="5px"
+                    px="20px"
+                    cursor="pointer"
+                    _hover={{ bgColor: "#eee" }}
+                    onClick={() => {
+                      setTimeout(() => {
+                        setSelectedUserId(user._id);
+                        setUserFilterInput(user.username);
+                        setLoadingHomePage(true);
+                      }, 100);
+                    }}
+                  >
+                    {user.username}
+                  </Text>
+                );
+              })
+            )}
+          </Box>
         </Box>
-      </Box>
+      )}
       {isAdmin && (
         <Link to="/dashboard">
           <SidebarSection
