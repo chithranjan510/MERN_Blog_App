@@ -18,6 +18,7 @@ const CreateBlog = () => {
   const { api } = useApi();
   const { addCategory } = useCommonApi();
   const [title, setTitle] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
   const [image, setImage] = useState<FileList | null>(null);
   const [content, setContent] = useState<string>("");
@@ -57,23 +58,31 @@ const CreateBlog = () => {
     formData.set("categoryId", selectedCategory._id);
     formData.set("blogImage", image[0]);
 
-    const res = await api(`/blog/create/?token=${token}`, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      setLoading(true);
 
-    if (res.ok) {
-      customToast("Blog created successfully", CustomToastStatusEnum.success);
-      navigate("/");
-      return;
+      const res = await api(`/blog/create/?token=${token}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      setLoading(false);
+
+      if (res.ok) {
+        customToast("Blog created successfully", CustomToastStatusEnum.success);
+        navigate("/");
+        return;
+      }
+
+      const data: { message?: string } = await res.json();
+
+      customToast(
+        data.message || "Something went wrong, Please try again",
+        CustomToastStatusEnum.error
+      );
+    } catch (error) {
+      console.log(error);
     }
-
-    const data: { message?: string } = await res.json();
-
-    customToast(
-      data.message || "Something went wrong, Please try again",
-      CustomToastStatusEnum.error
-    );
   };
 
   const addNewCategory = async () => {
@@ -259,7 +268,12 @@ const CreateBlog = () => {
             onChange={(data) => setContent(data)}
             style={{ height: "400px" }}
           />
-          <FormSubmitButton type="submit" mt={20} label="Create Post" />
+          <FormSubmitButton
+            type="submit"
+            mt={20}
+            label="Create Post"
+            isLoading={loading}
+          />
         </form>
       </Box>
     </Box>

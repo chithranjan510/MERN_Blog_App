@@ -11,6 +11,7 @@ import useApi from "../hooks/useApi";
 const Register = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -32,26 +33,34 @@ const Register = () => {
       password,
     };
 
-    const response = await api("/user/register", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        "content-type": "application/json",
-      },
-    });
+    try {
+      setLoading(true);
 
-    if (response.ok) {
-      customToast("Registered Successfully", CustomToastStatusEnum.success);
-      navigate("/login");
-      return;
+      const response = await api("/user/register", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+
+      setLoading(false);
+
+      const data: { message?: string } = await response.json();
+
+      if (response.ok) {
+        customToast("Registered Successfully", CustomToastStatusEnum.success);
+        navigate("/login");
+        return;
+      }
+
+      customToast(
+        data.message || "Something went wrong, Please try again",
+        CustomToastStatusEnum.error
+      );
+    } catch (error) {
+      console.log(error);
     }
-
-    const data: { message?: string } = await response.json();
-
-    customToast(
-      data.message || "Something went wrong, Please try again",
-      CustomToastStatusEnum.error
-    );
   };
 
   useEffect(() => {
@@ -163,7 +172,7 @@ const Register = () => {
                   </Text>
                 )}
             </Box>
-            <FormSubmitButton label="Register" />
+            <FormSubmitButton label="Register" isLoading={loading} />
           </VStack>
         </form>
       </Box>

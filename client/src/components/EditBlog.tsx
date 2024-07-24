@@ -35,6 +35,7 @@ const EditBlog = () => {
   const [oldImageSrc, setOldImageSrc] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [updating, setUpdating] = useState<boolean>(false);
   const [isData, setIsData] = useState<boolean>(false);
   const [postUserId, setPostUserId] = useState<string | null>(null);
   const customToast = useCustomToast();
@@ -62,23 +63,31 @@ const EditBlog = () => {
     }
     formData.set("coverImagePath", oldImageSrc);
 
-    const res = await api(`/blog/edit/${id}/?token=${token}`, {
-      method: "PUT",
-      body: formData,
-    });
+    try {
+      setUpdating(true);
 
-    if (res.ok) {
-      customToast("Blog updated successfully", CustomToastStatusEnum.success);
-      navigate(`/blog/${id}`);
-      return;
+      const res = await api(`/blog/edit/${id}/?token=${token}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      setUpdating(false);
+
+      if (res.ok) {
+        customToast("Blog updated successfully", CustomToastStatusEnum.success);
+        navigate(`/blog/${id}`);
+        return;
+      }
+
+      const data: { message?: string } = await res.json();
+
+      customToast(
+        data.message || "Something went wrong, Please try again",
+        CustomToastStatusEnum.error
+      );
+    } catch (error) {
+      console.log(error);
     }
-
-    const data: { message?: string } = await res.json();
-
-    customToast(
-      data.message || "Something went wrong, Please try again",
-      CustomToastStatusEnum.error
-    );
   };
 
   useEffect(() => {
@@ -224,7 +233,11 @@ const EditBlog = () => {
             style={{ height: "400px" }}
           />
           <HStack w="100%" mt={20}>
-            <FormSubmitButton type="submit" label="Edit Post" />
+            <FormSubmitButton
+              type="submit"
+              label="Edit Post"
+              isLoading={updating}
+            />
             <Button
               w="100%"
               borderRadius="10px"

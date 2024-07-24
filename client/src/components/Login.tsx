@@ -12,6 +12,7 @@ import Cookies from "js-cookie";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
@@ -27,26 +28,34 @@ const Login = () => {
       password,
     };
 
-    const res = await api("/user/login", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    });
+    try {
+      setLoading(true);
 
-    const data: { message?: string; token: string } = await res.json();
+      const res = await api("/user/login", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+      });
 
-    if (res.ok) {
-      Cookies.set("token", data.token);
-      customToast("Logged in Successfully", CustomToastStatusEnum.success);
-      setIsLoggedIn(true);
-      navigate("/");
-      return;
+      setLoading(false);
+
+      const data: { message?: string; token: string } = await res.json();
+
+      if (res.ok) {
+        Cookies.set("token", data.token);
+        customToast("Logged in Successfully", CustomToastStatusEnum.success);
+        setIsLoggedIn(true);
+        navigate("/");
+        return;
+      }
+
+      customToast(
+        data.message || "Something went wrong, Please try again",
+        CustomToastStatusEnum.error
+      );
+    } catch (error) {
+      console.log(error);
     }
-
-    customToast(
-      data.message || "Something went wrong, Please try again",
-      CustomToastStatusEnum.error
-    );
   };
 
   useEffect(() => {
@@ -120,7 +129,7 @@ const Login = () => {
                 )}
               </Center>
             </Box>
-            <FormSubmitButton label="Login" />
+            <FormSubmitButton label="Login" isLoading={loading} />
           </VStack>
         </form>
       </Box>

@@ -196,6 +196,7 @@ const UserDetails = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const customToast = useCustomToast();
@@ -231,11 +232,15 @@ const UserDetails = () => {
     });
 
     try {
+      setLoading(true);
+
       const res = await api(`/user/updateProfile/?token=${token}`, {
         method: "PUT",
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
       });
+
+      setLoading(false);
 
       const data: { token: string; message?: string } = await res.json();
 
@@ -355,7 +360,11 @@ const UserDetails = () => {
                 )}
             </Box>
             <HStack spacing={5}>
-              <FormSubmitButton label="Update Profile" letterSpacing={0} />
+              <FormSubmitButton
+                label="Update Profile"
+                letterSpacing={0}
+                isLoading={loading}
+              />
               <Button
                 w="100%"
                 borderRadius="10px"
